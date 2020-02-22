@@ -695,12 +695,59 @@ extra_new_line = [  # noqa: WPS355
 
 
 class GetterAndSetter(object):  # noqa: WPS614
-    
-    def __init__(self):
-        self.attribute = 1
-    
-    def get_attribute(self):
-        return self.attribute
 
-    def set_attribute(self, parameter):
-        self.attribute = parameter
+    def get_instance_attribute(self):
+        return 1
+
+    def set_instance_attribute(self):
+        return 1
+
+    @classmethod
+    def get_class_attribute(self):
+        return 1
+
+    @classmethod
+    def set_class_attribute(self):
+        return 1      
+
+class GetterOrSetterInstance(object):  # noqa: WPS614
+
+    def __init__(self):
+        self.instance_attribute1 = 1
+        self._instance_attribute2 = 1
+        self.instance_attribute3 = 1
+        self._instance_attribute4 = 1
+
+    def get_instance_attribute1(self):
+        return 1
+
+    def get_instance_attribute2(self):
+        return 1
+
+    def set_instance_attribute3(self):
+        return 1
+
+    def set_instance_attribute4(self):
+        return 1
+
+class GetterOrSetterClass(object):  # noqa: WPS614
+    class_attribute1 = 1
+    _class_attribute2 = 1
+    class_attribute3 = 1
+    _class_attribute4 = 1
+
+    @classmethod
+    def get_class_attribute1(self):
+        return 1
+
+    @classmethod
+    def get_class_attribute2(self):
+        return 1
+
+    @classmethod
+    def set_class_attribute3(self):
+        return 1
+
+    @classmethod
+    def set_class_attribute4(self):
+        return 1
