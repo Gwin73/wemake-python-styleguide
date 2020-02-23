@@ -57,6 +57,7 @@ Summary
    CognitiveModuleComplexityViolation
    TooLongCallChainViolation
    TooComplexAnnotationViolation
+   TooManyRaisesViolation
 
 
 Module complexity
@@ -96,6 +97,7 @@ Structure complexity
 .. autoclass:: CognitiveModuleComplexityViolation
 .. autoclass:: TooLongCallChainViolation
 .. autoclass:: TooComplexAnnotationViolation
+.. autoclass:: TooManyRaisesViolation
 
 """
 
@@ -1094,3 +1096,28 @@ class TooComplexAnnotationViolation(ASTViolation):
 
     error_template = 'Found too complex annotation: {0}'
     code = 234
+
+
+@final
+class TooManyRaisesViolation(ASTViolation):
+    """
+    Summary here.
+
+    Reasoning:
+        Reasoning here.
+
+    Solution:
+        Solution here.
+
+    Configuration:
+        Configuration here.
+
+    See also:
+        Links here.
+
+    .. versionadded:: 0.14.0
+
+    """
+
+    error_template = 'Error template here'
+    code = 235
