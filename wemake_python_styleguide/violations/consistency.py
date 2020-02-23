@@ -82,6 +82,7 @@ Summary
    ConsecutiveYieldsViolation
    BracketBlankLineViolation
    IterableUnpackingViolation
+   RawStringNotNeededViolation
 
 Consistency checks
 ------------------
@@ -143,6 +144,7 @@ Consistency checks
 .. autoclass:: ConsecutiveYieldsViolation
 .. autoclass:: BracketBlankLineViolation
 .. autoclass:: IterableUnpackingViolation
+.. autoclass:: RawStringNotNeededViolation
 
 """
 
@@ -2107,3 +2109,20 @@ class IterableUnpackingViolation(ASTViolation):
 
     error_template = 'Found an unnecessary iterable unpacking'
     code = 356
+
+
+@final
+class RawStringNotNeededViolation(TokenizeViolation):
+    """
+    Summary here.
+    Reasoning:
+        Reasoning here.
+    Solution:
+        Solution here.
+    Example::
+        Examples here.
+    .. versionadded:: 0.13.0
+    """
+
+    error_template = 'Error template here'
+    code = 357
