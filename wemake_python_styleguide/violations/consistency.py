@@ -2113,20 +2113,25 @@ class IterableUnpackingViolation(ASTViolation):
 
 @final
 class RawStringNotNeededViolation(TokenizeViolation):
-    """
-    Summary here.
+    r"""
+    Forbid the use of raw strings when there is no backslash in the string.
 
     Reasoning:
-        Reasoning here.
+        Raw string are only needed when dealing with \ in the string.
 
     Solution:
-        Solution here.
+        Do not prefix the string with r. Use a normal string instead.
 
     Example::
-        Examples here.
+        # Correct:
+        s = r'This is a correct use \'
+
+        # Wrong:
+        s = r'This string should not be prefixed with r.'
 
     .. versionadded:: 0.13.0
+
     """
 
-    error_template = 'Error template here'
+    error_template = 'Found an unnecessary use of a raw string'
     code = 357
