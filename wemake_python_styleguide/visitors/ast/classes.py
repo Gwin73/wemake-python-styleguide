@@ -47,11 +47,13 @@ class WrongClassVisitor(base.BaseNodeVisitor):
             WrongBaseClassViolation
             WrongClassBodyContentViolation
             BuiltinSubclassViolation
+            UnpythonicGetterSetterViolation
 
         """
         self._check_base_classes_count(node)
         self._check_base_classes(node)
         self._check_wrong_body_nodes(node)
+        self._check_getters_setters_methods(node)
         self.generic_visit(node)
 
     def _check_base_classes_count(self, node: ast.ClassDef) -> None:
@@ -116,6 +118,15 @@ class WrongClassVisitor(base.BaseNodeVisitor):
 
             return len(subscripts) == 1 and correct_items
         return False
+
+    def _check_getters_setters_methods(self, node: ast.ClassDef) -> None:
+        for subnode in ast.walk(node):
+            context = nodes.get_context(subnode)
+            if isinstance(subnode, FunctionNodes) and context == node:
+                if any(names in subnode.name for names in ('get_', 'set_')):
+                    after_get = subnode.name.partition('get_')[2]
+                    method_name = 'Ruwaid: {0}'.format(after_get)
+                    print(method_name)
 
 
 @final
