@@ -58,6 +58,7 @@ Summary
    TooLongCallChainViolation
    TooComplexAnnotationViolation
    TooManyImportedModuleMembersViolation
+   TooManyRaisesViolation
 
 
 Module complexity
@@ -98,6 +99,7 @@ Structure complexity
 .. autoclass:: TooLongCallChainViolation
 .. autoclass:: TooComplexAnnotationViolation
 .. autoclass:: TooManyImportedModuleMembersViolation
+.. autoclass:: TooManyRaisesViolation
 
 """
 
@@ -1125,10 +1127,34 @@ class TooManyImportedModuleMembersViolation(ASTViolation):
         This rule is configurable with ``--max-import-from-members``.
         Default:
         :str:`wemake_python_styleguide.options.defaults.MAX_IMPORT_FROM_MEMBERS`
+    """
+
+    error_template = 'Found too many imported names from a module: {0}'
+
+    code = 235
+
+
+@final
+class TooManyRaisesViolation(ASTViolation):
+    """
+    Summary here.
+
+    Reasoning:
+        Reasoning here.
+
+    Solution:
+        Solution here.
+
+    Configuration:
+        Configuration here.
+
+    See also:
+        Links here.
 
     .. versionadded:: 0.14.0
 
     """
 
-    error_template = 'Found too many imported names from a module: {0}'
-    code = 235
+    error_template = 'Error template here'
+
+    code = 236
