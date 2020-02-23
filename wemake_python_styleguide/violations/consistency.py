@@ -2129,7 +2129,7 @@ class RawStringNotNeededViolation(TokenizeViolation):
         # Wrong:
         s = r'This string should not be prefixed with r.'
 
-    .. versionadded:: 0.13.0
+    .. versionadded:: 0.14.0
 
     """
 
