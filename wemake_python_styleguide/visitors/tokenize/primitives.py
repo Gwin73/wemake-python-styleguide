@@ -230,7 +230,7 @@ class WrongStringTokenVisitor(BaseTokenVisitor):
         if 'r' in modifiers.lower():
             if '\\' not in string_def.encode('unicode-escape').decode():
                 self.add_violation(
-                    RawStringNotNeededViolation(token, text=token.string),
+                    RawStringNotNeededViolation(token),
                 )
 
 
