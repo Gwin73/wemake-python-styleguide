@@ -347,7 +347,7 @@ def function(  # noqa: WPS320
                }  # noqa: WPS318
 
 
-string_modifier = R'(s)'  # noqa: WPS321
+string_modifier = R'(\n)'  # noqa: WPS321
 multiline_string = """abc"""  # noqa: WPS322
 
 
@@ -692,3 +692,5 @@ extra_new_line = [  # noqa: WPS355
     'wrong',
 ]
 *numbers, = [4, 7]  # noqa: WPS356
+
+unnecessary_raw_string = r'this string does not contain any backlashes.' # noqa: WPS357
