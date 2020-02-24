@@ -24,8 +24,8 @@ from wemake_python_styleguide.violations.complexity import (
     TooManyAwaitsViolation,
     TooManyExpressionsViolation,
     TooManyLocalsViolation,
-    TooManyReturnsViolation,
     TooManyRaisesViolation,
+    TooManyReturnsViolation,
 )
 from wemake_python_styleguide.visitors.base import BaseNodeVisitor
 from wemake_python_styleguide.visitors.decorators import alias
