@@ -107,7 +107,7 @@ MAX_ASSERTS: Final = 5  # 7-2
 MAX_ACCESS_LEVEL: Final = 4  # guessed
 
 #: Maximum number of public attributes in a single class.
-MAX_ATTRIBUTES: Final = 7  # guessed
+MAX_ATTRIBUTES: Final = 6  # guessed
 
 #: Maximum number of raises in a function.
 MAX_RAISES: Final = 3  # guessed

@@ -4,6 +4,12 @@ import pytest
 
 from wemake_python_styleguide.violations.complexity import (
     TooManyPublicAttributesViolation,
+    TooManyExpressionsViolation,
+    TooManyReturnsViolation,
+    TooManyLocalsViolation,
+    TooManyArgumentsViolation,
+    TooManyAwaitsViolation,
+    TooManyRaisesViolation,
 )
 from wemake_python_styleguide.visitors.ast.complexity.classes import (
     ClassComplexityVisitor,
@@ -95,7 +101,16 @@ def test_wrong_attributes_count(
     visitor = ClassComplexityVisitor(option_values, tree=tree)
     visitor.run()
 
-    assert_errors(visitor, [TooManyPublicAttributesViolation])
+    assert_errors(
+        visitor,
+        [TooManyPublicAttributesViolation],
+        ignored_types = (TooManyExpressionsViolation,
+                         TooManyReturnsViolation,
+                         TooManyLocalsViolation,
+                         TooManyArgumentsViolation,
+                         TooManyAwaitsViolation,
+                         TooManyRaisesViolation,),
+    )
     assert_error_text(visitor, '2', option_values.max_attributes)
 
 
