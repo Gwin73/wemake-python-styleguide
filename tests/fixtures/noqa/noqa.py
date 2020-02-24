@@ -693,23 +693,6 @@ extra_new_line = [  # noqa: WPS355
 ]
 *numbers, = [4, 7]  # noqa: WPS356
 
-
-class GetterAndSetter(object):  # noqa: WPS614
-
-    def get_instance_attribute(self):
-        return 1
-
-    def set_instance_attribute(self):
-        return 1
-
-    @classmethod
-    def get_class_attribute(self):
-        return 1
-
-    @classmethod
-    def set_class_attribute(self):
-        return 1      
-
 class GetterAndSetterProperty(object):
     
     def __init__(self):
