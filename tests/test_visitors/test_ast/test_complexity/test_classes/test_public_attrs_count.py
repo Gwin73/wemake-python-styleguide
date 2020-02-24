@@ -3,13 +3,13 @@
 import pytest
 
 from wemake_python_styleguide.violations.complexity import (
-    TooManyPublicAttributesViolation,
-    TooManyExpressionsViolation,
-    TooManyReturnsViolation,
-    TooManyLocalsViolation,
     TooManyArgumentsViolation,
     TooManyAwaitsViolation,
+    TooManyExpressionsViolation,
+    TooManyLocalsViolation,
+    TooManyPublicAttributesViolation,
     TooManyRaisesViolation,
+    TooManyReturnsViolation,
 )
 from wemake_python_styleguide.visitors.ast.complexity.classes import (
     ClassComplexityVisitor,
