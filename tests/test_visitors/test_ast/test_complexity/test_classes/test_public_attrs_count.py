@@ -104,12 +104,12 @@ def test_wrong_attributes_count(
     assert_errors(
         visitor,
         [TooManyPublicAttributesViolation],
-        ignored_types = (TooManyExpressionsViolation,
-                         TooManyReturnsViolation,
-                         TooManyLocalsViolation,
-                         TooManyArgumentsViolation,
-                         TooManyAwaitsViolation,
-                         TooManyRaisesViolation,),
+        ignored_types=(TooManyExpressionsViolation,
+            TooManyReturnsViolation,
+            TooManyLocalsViolation,
+            TooManyArgumentsViolation,
+            TooManyAwaitsViolation,
+            TooManyRaisesViolation,),
     )
     assert_error_text(visitor, '2', option_values.max_attributes)
 
