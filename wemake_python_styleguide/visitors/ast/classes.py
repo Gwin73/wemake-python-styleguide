@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import ast
-import re
 from collections import defaultdict
 from typing import ClassVar, DefaultDict, FrozenSet, List, Optional
 
@@ -130,7 +129,7 @@ class WrongClassVisitor(base.BaseNodeVisitor):
 
         for attribute in attribute_names:
             for method_postfix in classes.getter_setter_postfixes(node):
-                if re.sub('^[^A-Za-z]*', '', attribute) == method_postfix:
+                if attribute.lstrip('_') == method_postfix:
                     self.add_violation(
                         oop.UnpythonicGetterSetterViolation(
                             node,
