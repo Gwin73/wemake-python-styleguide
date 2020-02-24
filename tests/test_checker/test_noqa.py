@@ -104,7 +104,7 @@ SHOULD_BE_RAISED = types.MappingProxyType({
     'WPS232': 0,  # logically unacceptable.
     'WPS233': 1,
     'WPS234': 1,
-    'WPS235': 0,  # should be 3, which right now breaks the tests
+    'WPS235': 3,  # should be 3, which right now breaks the tests
 
     'WPS300': 1,
     'WPS301': 1,
