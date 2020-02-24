@@ -39,7 +39,7 @@ _NodeTypeHandler = Dict[
     _FunctionCounter,
 ]
 
-@final @dataclass
+@final
 class _ComplexityExitMetrics(object):
     """Helper class to store counters of statements that exit from a function."""
 
