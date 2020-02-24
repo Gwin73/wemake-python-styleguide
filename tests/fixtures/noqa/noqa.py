@@ -694,7 +694,33 @@ extra_new_line = [  # noqa: WPS355
 *numbers, = [4, 7]  # noqa: WPS356
 
 
-class GetterAndSetter(object):  # noqa: WPS614
+class GetterAndSetterParent(object):
+
+    def __init__(self):
+        self.parent_attribute = 1
+
+
+class GetterAndSetterChild(GetterAndSetterParent):
+
+    # What is the intended behavior here?
+    def get_parent_attribute(self):
+        return 1
+
+    def set_parent_attribute(self):
+        return 1
+
+
+class GetterAndSetterFalsePositives(object):
+    
+    def __init__(self):
+        self.instance_attribute1 = 1
+        self.something_instance_attribute2 = 1
+
+    def something_get_instance_attribute1(self):
+        return 1
+
+    def get_instance_attribute2(self):
+        return 1
 
     def get_instance_attribute(self):
         return 1
@@ -703,12 +729,13 @@ class GetterAndSetter(object):  # noqa: WPS614
         return 1
 
     @classmethod
-    def get_class_attribute(self):
+    def get_class_attribute(cls2):
         return 1
 
     @classmethod
-    def set_class_attribute(self):
-        return 1      
+    def set_class_attribute(cls2):
+        return 1
+
 
 class GetterAndSetterProperty(object):
     
@@ -722,6 +749,7 @@ class GetterAndSetterProperty(object):
     @property.setter
     def set_property(self):
         return 1
+
 
 class GetterOrSetterInstance(object):  # noqa: WPS614
 
@@ -751,6 +779,7 @@ class GetterOrSetterInstance(object):  # noqa: WPS614
     def set_instance_attribute6(self):
         return 1
 
+
 class GetterOrSetterClass(object):  # noqa: WPS614
     class_attribute1 = 1
     _class_attribute2 = 1
@@ -760,25 +789,33 @@ class GetterOrSetterClass(object):  # noqa: WPS614
     __class_attribute6 = 1  # noqa: WPS112
 
     @classmethod
-    def get_class_attribute1(self):
+    def get_class_attribute1(cls2):
         return 1
 
     @classmethod
-    def get_class_attribute2(self):
+    def get_class_attribute2(cls2):
         return 1
 
     @classmethod
-    def get_class_attribute3(self):
+    def get_class_attribute3(cls2):
         return 1
 
     @classmethod
-    def set_class_attribute4(self):
+    def set_class_attribute4(cls2):
         return 1
 
     @classmethod
-    def set_class_attribute5(self):
+    def set_class_attribute5(cls2):
         return 1
 
     @classmethod
-    def set_class_attribute6(self):
+    def set_class_attribute6(cls2):
         return 1
+
+some_attribute = 1
+
+def get_some_attribute():
+    return 1
+
+def set_some_attribute():
+    return 1
