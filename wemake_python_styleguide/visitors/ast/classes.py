@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ast
+import re
 from collections import defaultdict
 from typing import ClassVar, DefaultDict, FrozenSet, List, Optional
 
@@ -120,13 +121,22 @@ class WrongClassVisitor(base.BaseNodeVisitor):
         return False
 
     def _check_getters_setters_methods(self, node: ast.ClassDef) -> None:
-        for subnode in ast.walk(node):
-            context = nodes.get_context(subnode)
-            if isinstance(subnode, FunctionNodes) and context == node:
-                if any(names in subnode.name for names in ('get_', 'set_')):
-                    after_get = subnode.name.partition('get_')[2]
-                    method_name = 'Ruwaid: {0}'.format(after_get)
-                    print(method_name)
+        class_attributes, instance_attributes = classes.get_attributes(node)
+        attribute_names = set(
+            name_nodes.flat_variable_names(class_attributes),
+        ).union({
+            instance.attr for instance in instance_attributes
+        })
+
+        for attribute in attribute_names:
+            for method_postfix in classes.getter_setter_postfixes(node):
+                if re.sub('^[^A-Za-z]*', '', attribute) == method_postfix:
+                    self.add_violation(
+                        oop.UnpythonicGetterSetterViolation(
+                            node,
+                            text=node.name,
+                        ),
+                    )
 
 
 @final
