@@ -84,7 +84,7 @@ def getter_setter_postfixes(node: ast.ClassDef) -> Set[str]:
 
 def is_getter_or_setter(node: types.AnyFunctionDef) -> bool:
     """Checks if non property decorated function contains get or set prefix."""
-    if any(prefix in node.name for prefix in ('get_', 'set_')):
+    if any(node.name.startswith(prefix) for prefix in ('get_', 'set_')):
         is_property = functions.check_decorators(node, 'property')
         is_property_setter = functions.check_decorators(node, '.setter')
         if not (is_property or is_property_setter):
