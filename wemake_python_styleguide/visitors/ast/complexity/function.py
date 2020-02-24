@@ -25,6 +25,7 @@ from wemake_python_styleguide.violations.complexity import (
     TooManyExpressionsViolation,
     TooManyLocalsViolation,
     TooManyReturnsViolation,
+    TooManyRaisesViolation,
 )
 from wemake_python_styleguide.visitors.base import BaseNodeVisitor
 from wemake_python_styleguide.visitors.decorators import alias
@@ -53,6 +54,7 @@ class _ComplexityCounter(object):
         self.asserts: _FunctionCounter = defaultdict(int)
         self.returns: _FunctionCounter = defaultdict(int)
         self.expressions: _FunctionCounter = defaultdict(int)
+        self.raises: _FunctionCounter = defaultdict(int)
         self.variables: DefaultDict[AnyFunctionDef, List[str]] = defaultdict(
             list,
         )
@@ -106,6 +108,7 @@ class _ComplexityCounter(object):
             ast.Expr: self.expressions,
             ast.Await: self.awaits,
             ast.Assert: self.asserts,
+            ast.Raise: self.raises,
         }
 
         for types, counter in error_counters.items():
@@ -146,6 +149,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
             TooManyLocalsViolation
             TooManyArgumentsViolation
             TooManyAwaitsViolation
+            TooManyRaisesViolation
 
         """
         self._counter.check_arguments_count(node)
@@ -213,6 +217,11 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 self._counter.asserts,
                 self.options.max_asserts,
                 TooManyAssertsViolation,
+            ),
+            (
+                self._counter.raises,
+                self.options.max_raises,
+                TooManyRaisesViolation,
             ),
         ]
 

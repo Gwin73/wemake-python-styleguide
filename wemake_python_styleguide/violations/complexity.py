@@ -1110,14 +1110,16 @@ class TooManyRaisesViolation(ASTViolation):
         Solution here.
 
     Configuration:
-        Configuration here.
+        This rule is configurable with ``--max-raises``.
+        Default:
+        :str:`wemake_python_styleguide.options.defaults.MAX_RAISES`
 
     See also:
         Links here.
 
-    .. versionadded:: 0.14.0
+    .. versionadded:: 0.15.0
 
     """
 
-    error_template = 'Error template here'
+    error_template = 'Found too many raises in a function: {0}'
     code = 235
