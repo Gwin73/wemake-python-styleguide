@@ -8,6 +8,13 @@ Semantic versioning in our case means:
 - Minor releases do bring new features and configuration options. New violations can be added. Code that passes `x.0.y` might not pass on `x.1.y` release.
 - Major releases inidicate significant milestones or serious breaking changes.
 
+## 0.15.0
+
+### Features
+
+- Forbids to use raw strings `r''` when not necessary
+
+### Bug fixes
 
 ## 0.14.0 aka The Walrus fighter WIP
 
@@ -35,7 +42,6 @@ Semantic versioning in our case means:
 - Forbids to use positional only `/` arguments
 - Adds `__call__` to list of methods that should be on top #1125
 - Now allows `_` to be used as a defined variable
-- Forbids to use raw strings `r''` when not necessary
 
 ### Bugfixes
 
