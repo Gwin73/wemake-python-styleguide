@@ -2124,7 +2124,7 @@ class RawStringNotNeededViolation(TokenizeViolation):
 
     Example::
         # Correct:
-        r'This is a correct use \'
+        r'This is a correct use \n'
 
         # Wrong:
         r'This string should not be prefixed with r.'
