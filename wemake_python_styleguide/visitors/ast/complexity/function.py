@@ -39,6 +39,14 @@ _NodeTypeHandler = Dict[
     _FunctionCounter,
 ]
 
+@final @dataclass
+class _ComplexityExitMetrics(object):
+    """Helper class to store counters of statements that exit from a function."""
+
+    def __init__(self) -> None:
+        self.returns: _FunctionCounter = defaultdict(int)
+        self.raises: _FunctionCounter = defaultdict(int)
+
 
 @final
 class _ComplexityCounter(object):
@@ -52,12 +60,11 @@ class _ComplexityCounter(object):
         self.awaits: _FunctionCounter = defaultdict(int)  # noqa: WPS204
         self.arguments: _FunctionCounterWithLambda = defaultdict(int)
         self.asserts: _FunctionCounter = defaultdict(int)
-        self.returns: _FunctionCounter = defaultdict(int)
         self.expressions: _FunctionCounter = defaultdict(int)
-        self.raises: _FunctionCounter = defaultdict(int)
         self.variables: DefaultDict[AnyFunctionDef, List[str]] = defaultdict(
             list,
         )
+        self.exit_metrics: _ComplexityExitMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
@@ -104,11 +111,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: self.returns,
+            ast.Return: self.exit_metrics.returns,
             ast.Expr: self.expressions,
             ast.Await: self.awaits,
             ast.Assert: self.asserts,
-            ast.Raise: self.raises,
+            ast.Raise: self.exit_metrics.raises,
         }
 
         for types, counter in error_counters.items():
@@ -204,7 +211,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 TooManyArgumentsViolation,
             ),
             (
-                self._counter.returns,
+                self._counter.exit_metrics.returns,
                 self.options.max_returns,
                 TooManyReturnsViolation,
             ),
@@ -219,7 +226,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 TooManyAssertsViolation,
             ),
             (
-                self._counter.raises,
+                self._counter.exit_metrics.raises,
                 self.options.max_raises,
                 TooManyRaisesViolation,
             ),
