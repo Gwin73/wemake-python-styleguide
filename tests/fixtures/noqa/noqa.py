@@ -706,29 +706,48 @@ for element in range(10):
 
 
 class SomeOtherClass(object):
+    def few_raises_instance_method(self, parameter):
+        if parameter == 1:
+            raise ValueError('1')
+        if parameter == 2:
+            raise ValueError('2')
+        if parameter == 3:
+            raise Exception('3')
 
     def many_raises_instance_method(self, parameter):  # noqa: WPS236
         if parameter == 1:
-            raise ValueError("1")
+            raise ValueError('1')
         if parameter == 2:
-            raise ValueError("2")
+            raise ValueError('2')
         if parameter == 3:
-            raise Exception("3")
+            raise Exception('3')
+        raise Exception('4')
 
     @classmethod
     def many_raises_class_method(cls2, parameter):  # noqa: WPS236
         if parameter == 1:
-            raise ValueError("1")
+            raise ValueError('1')
         if parameter == 2:
-            raise ValueError("2")
+            raise ValueError('2')
         if parameter == 3:
-            raise Exception("3")
+            raise Exception('3')
+        raise Exception('4')
 
 def many_raises_function(parameter):  # noqa: WPS236
     if parameter == 1:
-        raise ValueError("1")
+        raise ValueError('1')
     if parameter == 2:
-        raise ValueError("2")
+        raise ValueError('2')
     if parameter == 3:
-        raise Exception("3")
+        raise Exception('3')
+    raise Exception('4')
 
+some_const = 1
+if some_const == 1:
+    raise ValueError('1')
+if some_const == 2:
+    raise ValueError('2')
+if some_const == 3:
+    raise Exception('3')
+raise Exception('4')
+    
