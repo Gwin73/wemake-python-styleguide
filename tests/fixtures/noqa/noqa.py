@@ -713,7 +713,7 @@ class SomeOtherClass(object):
         raise Exception('4')
 
     @classmethod  # noqa: WPS235
-    def many_raises_class_method(cls2, parameter):
+    def many_raises_class_method(cls2, parameter): # noqa: WPS235
         if parameter == 1:
             raise ValueError('1')
         if parameter == 2:
