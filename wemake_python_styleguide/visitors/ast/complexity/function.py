@@ -64,7 +64,7 @@ class _ComplexityCounter(object):
         self.variables: DefaultDict[AnyFunctionDef, List[str]] = defaultdict(
             list,
         )
-        self._exit_metrics: _ComplexityExitMetrics()
+        self._exit_metrics = _ComplexityExitMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
