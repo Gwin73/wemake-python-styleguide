@@ -42,8 +42,11 @@ _NodeTypeHandler = Dict[
 
 @final
 class _ComplexityExitMetrics(object):
-    """Helper class to store counters of statements that
-    exit from a function."""
+    """
+    Helper class.
+
+    Stores counters of statements that exit from a function.
+    """
 
     def __init__(self) -> None:
         self.returns: _FunctionCounter = defaultdict(int)
