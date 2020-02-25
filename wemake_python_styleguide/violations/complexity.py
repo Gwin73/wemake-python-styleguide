@@ -1137,24 +1137,30 @@ class TooManyImportedModuleMembersViolation(ASTViolation):
 @final
 class TooManyRaisesViolation(ASTViolation):
     """
-    Summary here.
+    Forbids too many raise statements in a function.
 
     Reasoning:
-        Reasoning here.
+        Too many raise statements in a function make the code
+        untraceable and overcomplicated.
 
     Solution:
-        Solution here.
+        Split the function into smaller functions, such that
+        each of them can raise less errors.
+        Create more standard errors, or use alternative ways to
+        raise them.
 
     Configuration:
-        Configuration here.
+        This rule is configurable with ``--max-raises``.
+        Default:
+        :str:`wemake_python_styleguide.options.defaults.MAX_RAISES`
 
     See also:
-        Links here.
+        https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
 
-    .. versionadded:: 0.14.0
+    .. versionadded:: 0.15.0
 
     """
 
-    error_template = 'Error template here'
+    error_template = 'Found too many raises in a function: {0}'
 
     code = 236
