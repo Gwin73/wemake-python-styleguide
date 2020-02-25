@@ -39,9 +39,11 @@ _NodeTypeHandler = Dict[
     _FunctionCounter,
 ]
 
+
 @final
 class _ComplexityExitMetrics(object):
-    """Helper class to store counters of statements that exit from a function."""
+    """Helper class to store counters of statements that
+    exit from a function."""
 
     def __init__(self) -> None:
         self.returns: _FunctionCounter = defaultdict(int)
@@ -64,7 +66,7 @@ class _ComplexityCounter(object):
         self.variables: DefaultDict[AnyFunctionDef, List[str]] = defaultdict(
             list,
         )
-        self._exit_metrics = _ComplexityExitMetrics()
+        self.exit_metrics = _ComplexityExitMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
@@ -111,11 +113,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: self._exit_metrics.returns,
+            ast.Return: self.exit_metrics.returns,
             ast.Expr: self.expressions,
             ast.Await: self.awaits,
             ast.Assert: self.asserts,
-            ast.Raise: self._exit_metrics.raises,
+            ast.Raise: self.exit_metrics.raises,
         }
 
         for types, counter in error_counters.items():
@@ -211,7 +213,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 TooManyArgumentsViolation,
             ),
             (
-                self._counter._exit_metrics.returns,
+                self._counter.exit_metrics.returns,
                 self.options.max_returns,
                 TooManyReturnsViolation,
             ),
@@ -226,7 +228,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 TooManyAssertsViolation,
             ),
             (
-                self._counter._exit_metrics.raises,
+                self._counter.exit_metrics.raises,
                 self.options.max_raises,
                 TooManyRaisesViolation,
             ),
