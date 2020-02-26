@@ -44,6 +44,20 @@ class Test(object):
         ...
 """
 
+dataclass_property_getter_setter = """
+@dataclass
+class DataClass(object):
+    attribute: int
+
+    @property
+    def get_attribute(self):
+        ...
+
+    @property
+    def set_attribute(self):
+        ...
+"""
+
 child_getter_and_setter = """
 class TestParent(object):
     def __init__(self):
@@ -96,15 +110,12 @@ class Test(object):
         ...
 """
 
-data_class_template = """
-
-"""
-
 
 @pytest.mark.parametrize('code', [
     module_getter_and_setter,
     static_getter_and_setter,
     property_getter_and_setter,
+    dataclass_property_getter_setter,
     child_getter_and_setter,
     nested_getter_and_setter,
 ])
