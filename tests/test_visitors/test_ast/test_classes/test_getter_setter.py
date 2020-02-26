@@ -87,10 +87,10 @@ class Template(object):
 class_attribute_template = """
 class Template(object):
     def __init__(self):
-        self.{0}
+        self.{0}{1}
 
-    {1}
-    def {2}(self):
+    {2}
+    def {3}(self):
         ...
 """
 
@@ -146,6 +146,7 @@ def test_property_getter_and_setter(
     assert_errors(visitor, [])
 
 
+@pytest.mark.parametrize('access', ['', '_', '__'])
 @pytest.mark.parametrize(('first', 'second', 'third'), [
     ('attribute = 1', '', 'get_attribute_some'),
     ('attribute = 1', '', 'some_get_attribute'),
@@ -179,13 +180,16 @@ def test_nonmatching_attribute_getter_setter(
     assert_errors,
     parse_ast_tree,
     default_options,
+    access,
     first,
     second,
     third,
     mode,
 ):
     """Testing that non matching attribute and getter/setter is allowed."""
-    test_instance = class_attribute_template.format(first, second, third)
+    test_instance = class_attribute_template.format(
+        access, first, second, third,
+    )
     tree = parse_ast_tree(mode(test_instance))
 
     visitor = WrongClassVisitor(default_options, tree=tree)
@@ -194,31 +198,25 @@ def test_nonmatching_attribute_getter_setter(
     assert_errors(visitor, [])
 
 
+@pytest.mark.parametrize('access', ['', '_', '__'])
 @pytest.mark.parametrize(('first', 'second', 'third'), [
     ('attribute = 1', '', 'get_attribute'),
-    ('_attribute = 1', '', 'get_attribute'),
-    ('__attribute = 1', '', 'get_attribute'),
     ('attribute = 1', '@classmethod', 'set_attribute'),
-    ('_attribute = 1', '@classmethod', 'set_attribute'),
-    ('__attribute = 1', '@classmethod', 'set_attribute'),
-    ('attribute = 1', '', 'get_attribute'),
-    ('_attribute = 1', '', 'get_attribute'),
-    ('__attribute = 1', '', 'get_attribute'),
-    ('attribute = 1', '@classmethod', 'set_attribute'),
-    ('_attribute = 1', '@classmethod', 'set_attribute'),
-    ('__attribute = 1', '@classmethod', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
     parse_ast_tree,
     default_options,
+    access,
     first,
     second,
     third,
     mode,
 ):
     """Testing that instance/class attribute and getter/setter is prohibited."""
-    test_instance = class_attribute_template.format(first, second, third)
+    test_instance = class_attribute_template.format(
+        access, first, second, third,
+    )
     tree = parse_ast_tree(mode(test_instance))
 
     visitor = WrongClassVisitor(default_options, tree=tree)
