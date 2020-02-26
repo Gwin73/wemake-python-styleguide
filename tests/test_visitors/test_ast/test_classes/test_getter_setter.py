@@ -101,12 +101,12 @@ class Test(object):
     third: int = 3
 
     def __init__(self):
-        self.{0} = 5
+        self.{0}{1} = 5
 
-    def get_{1}(self):
+    def get_{2}(self):
         ...
 
-    def set_{2}(self):
+    def set_{3}(self):
         ...
 """
 
@@ -153,18 +153,21 @@ def test_property_getter_and_setter(
     ('attribute = 1', '', 'attribute_get'),
     ('some_attribute = 1', '', 'get_attribute'),
     ('attribute_some = 1', '', 'get_attribute'),
+
     ('attribute: int = 1', '', 'get_attribute_some'),
     ('attribute: int = 1', '', 'some_get_attribute'),
     ('attribute: int = 1', '', 'get_some_attribute'),
     ('attribute: int = 1', '', 'attribute_get'),
     ('some_attribute: int = 1', '', 'get_attribute'),
     ('attribute_some: int = 1', '', 'get_attribute'),
+
     ('attribute = self.other = 1', '', 'get_attribute_some'),
     ('attribute = self.other = 1', '', 'some_get_attribute'),
     ('attribute = self.other = 1', '', 'get_some_attribute'),
     ('attribute = self.other = 1', '', 'attribute_get'),
     ('some_attribute = self.other = 1', '', 'get_attribute'),
     ('attribute_some = self.other = 1', '', 'get_attribute'),
+
     ('attribute, self.other = 1, 2', '', 'get_attribute_some'),
     ('attribute, self.other = 1, 2', '', 'some_get_attribute'),
     ('attribute, self.other = 1, 2', '', 'get_some_attribute'),
@@ -197,7 +200,13 @@ def test_nonmatching_attribute_getter_setter(
     ('__attribute = 1', '', 'get_attribute'),
     ('attribute = 1', '@classmethod', 'set_attribute'),
     ('_attribute = 1', '@classmethod', 'set_attribute'),
-    ('__attribute= 1', '@classmethod', 'set_attribute'),
+    ('__attribute = 1', '@classmethod', 'set_attribute'),
+    ('attribute = 1', '', 'get_attribute'),
+    ('_attribute = 1', '', 'get_attribute'),
+    ('__attribute = 1', '', 'get_attribute'),
+    ('attribute = 1', '@classmethod', 'set_attribute'),
+    ('_attribute = 1', '@classmethod', 'set_attribute'),
+    ('__attribute = 1', '@classmethod', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
@@ -218,25 +227,23 @@ def test_instance_and_class_getter_setter(
     assert_errors(visitor, [UnpythonicGetterSetterViolation])
 
 
+@pytest.mark.parametrize('access', ['', '_', '__'])
 @pytest.mark.parametrize(('first', 'second', 'third'), [
     ('attribute', 'some', 'other'),
-    ('_attribute', 'some', 'other'),
-    ('__attribute', 'some', 'other'),
     ('attribute', 'some', 'some'),
-    ('_attribute', 'some', 'some'),
-    ('__attribute', 'some', 'some'),
 ])
 def test_class_mixed(
     assert_errors,
     parse_ast_tree,
     default_options,
+    access,
     first,
     second,
     third,
     mode,
 ):
     """Testing correct use of methods with get/set in name."""
-    test_instance = class_mixed.format(first, second, third)
+    test_instance = class_mixed.format(access, first, second, third)
     tree = parse_ast_tree(mode(test_instance))
 
     visitor = WrongClassVisitor(default_options, tree=tree)
@@ -255,7 +262,7 @@ def test_invalid_getter_and_setter(
     code,
     mode,
 ):
-    """Testing that wrong use of getter/setter is."""
+    """Testing that wrong use of getter/setter is prohibited."""
     tree = parse_ast_tree(mode(code))
 
     visitor = WrongClassVisitor(default_options, tree=tree)
