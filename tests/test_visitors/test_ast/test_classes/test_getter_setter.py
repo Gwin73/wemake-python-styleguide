@@ -87,10 +87,10 @@ class Template(object):
 class_attribute_template = """
 class Template(object):
     def __init__(self):
-        self.{0}{1}
+        self.{0}{1}{2}
 
-    {2}
-    def {3}(self):
+    {3}
+    def {4}(self):
         ...
 """
 
@@ -147,48 +147,34 @@ def test_property_getter_and_setter(
 
 
 @pytest.mark.parametrize('access', ['', '_', '__'])
-@pytest.mark.parametrize(('first', 'second', 'third'), [
-    ('attribute = 1', '', 'get_attribute_some'),
-    ('attribute = 1', '', 'some_get_attribute'),
-    ('attribute = 1', '', 'get_some_attribute'),
-    ('attribute = 1', '', 'attribute_get'),
-    ('some_attribute = 1', '', 'get_attribute'),
-    ('attribute_some = 1', '', 'get_attribute'),
-
-    ('attribute: int = 1', '', 'get_attribute_some'),
-    ('attribute: int = 1', '', 'some_get_attribute'),
-    ('attribute: int = 1', '', 'get_some_attribute'),
-    ('attribute: int = 1', '', 'attribute_get'),
-    ('some_attribute: int = 1', '', 'get_attribute'),
-    ('attribute_some: int = 1', '', 'get_attribute'),
-
-    ('attribute = self.other = 1', '', 'get_attribute_some'),
-    ('attribute = self.other = 1', '', 'some_get_attribute'),
-    ('attribute = self.other = 1', '', 'get_some_attribute'),
-    ('attribute = self.other = 1', '', 'attribute_get'),
-    ('some_attribute = self.other = 1', '', 'get_attribute'),
-    ('attribute_some = self.other = 1', '', 'get_attribute'),
-
-    ('attribute, self.other = 1, 2', '', 'get_attribute_some'),
-    ('attribute, self.other = 1, 2', '', 'some_get_attribute'),
-    ('attribute, self.other = 1, 2', '', 'get_some_attribute'),
-    ('attribute, self.other = 1, 2', '', 'attribute_get'),
-    ('some_attribute, self.other = 1, 2', '', 'get_attribute'),
-    ('attribute_some, self.other = 1, 2', '', 'get_attribute'),
+@pytest.mark.parametrize('assignment', [
+    ' = 1',
+    ': int = 1',
+    ' = self.other = 1',
+    ', self.other = 1, 2',
+])
+@pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
+    ('attribute', '', 'get_attribute_some'),
+    ('attribute', '', 'some_get_attribute'),
+    ('attribute', '', 'get_some_attribute'),
+    ('attribute', '', 'attribute_get'),
+    ('some_attribute', '', 'get_attribute'),
+    ('attribute_some', '', 'get_attribute'),
 ])
 def test_nonmatching_attribute_getter_setter(
     assert_errors,
     parse_ast_tree,
     default_options,
     access,
-    first,
-    second,
-    third,
+    assignment,
+    attribute_name,
+    annotation,
+    method_name,
     mode,
 ):
     """Testing that non matching attribute and getter/setter is allowed."""
     test_instance = class_attribute_template.format(
-        access, first, second, third,
+        access, attribute_name, assignment, annotation, method_name,
     )
     tree = parse_ast_tree(mode(test_instance))
 
@@ -199,23 +185,30 @@ def test_nonmatching_attribute_getter_setter(
 
 
 @pytest.mark.parametrize('access', ['', '_', '__'])
-@pytest.mark.parametrize(('first', 'second', 'third'), [
-    ('attribute = 1', '', 'get_attribute'),
-    ('attribute = 1', '@classmethod', 'set_attribute'),
+@pytest.mark.parametrize('assignment', [
+    ' = 1',
+    ': int = 1',
+    ' = self.other = 1',
+    ', self.other = 1, 2',
+])
+@pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
+    ('attribute', '', 'get_attribute'),
+    ('attribute', '@classmethod', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
     parse_ast_tree,
     default_options,
     access,
-    first,
-    second,
-    third,
+    assignment,
+    attribute_name,
+    annotation,
+    method_name,
     mode,
 ):
     """Testing that instance/class attribute and getter/setter is prohibited."""
     test_instance = class_attribute_template.format(
-        access, first, second, third,
+        access, attribute_name, assignment, annotation, method_name,
     )
     tree = parse_ast_tree(mode(test_instance))
 
