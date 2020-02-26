@@ -47,26 +47,26 @@ class Test(object):
 dataclass_property_getter_setter = """
 @dataclass
 class DataClass(object):
-    asd: int
+    attribute: int
 
     @property
-    def get_asd(self):
+    def get_attribute(self):
         ...
 
     @property
-    def set_asd(self):
+    def set_attribute(self):
         ...
 """
 
 dataclass_getter_setter = """
 @dataclass
 class DataClass(object):
-    asd: int
+    attribute: int
 
-    def get_asd(self):
+    def get_attribute(self):
         ...
 
-    def set_asd(self):
+    def set_attribute(self):
         ...
 """
 
