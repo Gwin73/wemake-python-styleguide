@@ -80,6 +80,22 @@ class Template(object):
         ...
 """
 
+class_mixed = """
+class Test(object):
+    first: int
+    second = 2
+    third: int = 3
+
+    def __init__(self):
+        self.{0} = 5
+
+    def get_{1}(self):
+        ...
+
+    def set_{2}(self):
+        ...
+"""
+
 
 @pytest.mark.parametrize('code', [
     module_getter_and_setter,
@@ -156,3 +172,30 @@ def test_instance_and_class_getter_setter(
     visitor.run()
 
     assert_errors(visitor, [UnpythonicGetterSetterViolation])
+
+
+@pytest.mark.parametrize(('first', 'second', 'third'), [
+    ('attribute', 'some', 'other'),
+    ('_attribute', 'some', 'other'),
+    ('__attribute', 'some', 'other'),
+    ('attribute', 'some', 'some'),
+    ('_attribute', 'some', 'some'),
+    ('__attribute', 'some', 'some'),
+])
+def test_class_mixed(
+    assert_errors,
+    parse_ast_tree,
+    default_options,
+    first,
+    second,
+    third,
+    mode,
+):
+    """Testing that a mixture of instance and class attributes."""
+    test_instance = class_mixed.format(first, second, third)
+    tree = parse_ast_tree(mode(test_instance))
+
+    visitor = WrongClassVisitor(default_options, tree=tree)
+    visitor.run()
+
+    assert_errors(visitor, [])
