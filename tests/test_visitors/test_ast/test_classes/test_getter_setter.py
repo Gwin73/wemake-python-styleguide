@@ -96,6 +96,10 @@ class Test(object):
         ...
 """
 
+data_class_template = """
+
+"""
+
 
 @pytest.mark.parametrize('code', [
     module_getter_and_setter,
@@ -191,7 +195,7 @@ def test_class_mixed(
     third,
     mode,
 ):
-    """Testing that a mixture of instance and class attributes."""
+    """Testing correct use of methods with get/set in name."""
     test_instance = class_mixed.format(first, second, third)
     tree = parse_ast_tree(mode(test_instance))
 
