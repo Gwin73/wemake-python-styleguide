@@ -47,26 +47,26 @@ class Test(object):
 dataclass_property_getter_setter = """
 @dataclass
 class DataClass(object):
-    attribute: int
+    asd: int
 
     @property
-    def get_attribute(self):
+    def get_asd(self):
         ...
 
     @property
-    def set_attribute(self):
+    def set_asd(self):
         ...
 """
 
 dataclass_getter_setter = """
 @dataclass
 class DataClass(object):
-    attribute: int
+    asd: int
 
-    def get_attribute(self):
+    def get_asd(self):
         ...
 
-    def set_attribute(self):
+    def set_asd(self):
         ...
 """
 
@@ -146,8 +146,6 @@ class Test(object):
 @pytest.mark.parametrize('code', [
     module_getter_and_setter,
     static_getter_and_setter,
-    property_getter_and_setter,
-    dataclass_property_getter_setter,
     child_getter_and_setter,
     nested_getter_and_setter,
 ])
@@ -215,6 +213,14 @@ def test_nonmatching_attribute_getter_setter(
 @pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
     ('attribute', '', 'get_attribute'),
     ('attribute', '@classmethod', 'set_attribute'),
+    ('_attribute', '@classmethod', 'set_attribute'),
+    ('__attribute', '@classmethod', 'set_attribute'),
+    ('attribute', '@property', 'get_attribute'),
+    ('_attribute', '@property', 'get_attribute'),
+    ('__attribute', '@property', 'get_attribute'),
+    ('attribute', '@attribute.setter', 'set_attribute'),
+    ('_attribute', '@attribute.setter', 'set_attribute'),
+    ('__attribute', '@attribute.setter', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
@@ -267,6 +273,8 @@ def test_class_mixed(
 @pytest.mark.parametrize('code', [
     class_attribute_instance_getter_setter,
     dataclass_getter_setter,
+    property_getter_and_setter,
+    dataclass_property_getter_setter,
 ])
 def test_invalid_getter_and_setter(
     assert_errors,
