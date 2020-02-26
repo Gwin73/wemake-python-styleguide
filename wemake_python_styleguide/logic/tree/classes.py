@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ast
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple, Union
 
 from wemake_python_styleguide import types
 from wemake_python_styleguide.compat.aliases import AssignNodes, FunctionNodes
@@ -43,23 +43,55 @@ def is_forbidden_super_class(class_name: Optional[str]) -> bool:
 def get_attributes(
     node: ast.ClassDef,
 ) -> Tuple[List[types.AnyAssign], List[ast.Attribute]]:
-    """Returns all class and instance attributes of a class."""
-    class_attributes = []
-    instance_attributes = []
+    """Returns all non annotated class and instance attributes of a class."""
+    return get_class_attributes(node), get_instance_attributes(node)
 
+
+def get_all_attributes(
+    node: ast.ClassDef,
+) -> Tuple[List[types.AnyAssign], List[ast.Attribute]]:
+    """Returns all class and instance attributes of a class."""
+    return get_annotated_class_attributes(node), get_instance_attributes(node)
+
+
+def get_class_attributes(
+    node: ast.ClassDef,
+) -> List[Union[ast.Assign, ast.AnnAssign]]:
+    """Returns all non annotated class attributes of a class."""
+    class_attributes = []
+    for sub in ast.walk(node):
+        correct_context = nodes.get_context(sub) == node
+        has_value = getattr(sub, 'value', None)
+        if isinstance(sub, AssignNodes) and has_value and correct_context:
+            class_attributes.append(sub)
+
+    return class_attributes
+
+
+def get_annotated_class_attributes(
+    node: ast.ClassDef,
+) -> List[Union[ast.Assign, ast.AnnAssign]]:
+    """Returns all class attributes of a class."""
+    class_attributes = []
+    for sub in ast.walk(node):
+        correct_context = nodes.get_context(sub) == node
+        has_value = getattr(sub, 'value', None)
+        if isinstance(sub, AssignNodes) and has_value and correct_context:
+            class_attributes.append(sub)
+            continue
+        if isinstance(sub, ast.AnnAssign) and correct_context:
+            class_attributes.append(sub)
+
+    return class_attributes
+
+
+def get_instance_attributes(node: ast.ClassDef) -> List[ast.Attribute]:
+    """Returns all instance attributes of a class."""
+    instance_attributes = []
     for sub in ast.walk(node):
         if isinstance(sub, ast.Attribute) and isinstance(sub.ctx, ast.Store):
             instance_attributes.append(sub)
-            continue
-
-        has_assign = (
-            nodes.get_context(sub) == node and
-            getattr(sub, 'value', None)
-        )
-        if isinstance(sub, AssignNodes) and has_assign:
-            class_attributes.append(sub)
-
-    return class_attributes, instance_attributes
+    return instance_attributes
 
 
 def getter_setter_postfixes(node: ast.ClassDef) -> Set[str]:

@@ -120,7 +120,7 @@ class WrongClassVisitor(base.BaseNodeVisitor):
         return False
 
     def _check_getters_setters_methods(self, node: ast.ClassDef) -> None:
-        class_attributes, instance_attributes = classes.get_attributes(node)
+        class_attributes, instance_attributes = classes.get_all_attributes(node)
         attribute_names = {
             class_attribute.lstrip('_') for class_attribute
             in name_nodes.flat_variable_names(class_attributes)
