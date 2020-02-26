@@ -215,7 +215,7 @@ def test_instance_and_class_getter_setter(
     method_name,
     mode,
 ):
-    """Testing that instance/class attribute and getter/setter is prohibited."""
+    """Testing that class attribute and getter/setter is prohibited."""
     test_instance = instance_attribute_template.format(
         access, attribute_name, assignment, annotation, method_name,
     )
@@ -306,3 +306,53 @@ def test_class_attributes_getter_setters(
     visitor.run()
 
     assert_errors(visitor, [UnpythonicGetterSetterViolation])
+
+
+@pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
+    ('attribute', '', 'get_attribute_some()'),
+    ('attribute', '', 'some_get_attribute()'),
+    ('attribute', '', 'get_some_attribute()'),
+    ('attribute', '', 'attribute_get()'),
+    ('some_attribute', '', 'get_attribute()'),
+    ('attribute_some', '', 'get_attribute()'),
+
+    ('attribute', '', 'get_attribute_some(self)'),
+    ('attribute', '', 'some_get_attribute(self)'),
+    ('attribute', '', 'get_some_attribute(self)'),
+    ('attribute', '', 'attribute_get(self)'),
+    ('some_attribute', '', 'get_attribute(self)'),
+    ('attribute_some', '', 'get_attribute(self)'),
+
+    ('attribute', '@classmethod', 'get_attribute_some(self)'),
+    ('attribute', '@classmethod', 'some_get_attribute(self)'),
+    ('attribute', '@classmethod', 'get_some_attribute(self)'),
+    ('attribute', '@classmethod', 'attribute_get(self)'),
+    ('some_attribute', '@classmethod', 'get_attribute(self)'),
+    ('attribute_some', '@classmethod', 'get_attribute(self)'),
+])
+@pytest.mark.parametrize('assignment', [
+    ' = 1',
+    ': int = 1',
+    ' = other = 1',
+    ', other = 1, 2',
+])
+def test_nonmatching_class_attributes(
+    assert_errors,
+    parse_ast_tree,
+    default_options,
+    attribute_name,
+    annotation,
+    method_name,
+    assignment,
+    mode,
+):
+    """Testing that nonmatching class attribute and getter/setter is allowed."""
+    test_instance = class_attribute_template.format(
+        attribute_name, assignment, annotation, method_name,
+    )
+    tree = parse_ast_tree(mode(test_instance))
+
+    visitor = WrongClassVisitor(default_options, tree=tree)
+    visitor.run()
+
+    assert_errors(visitor, [])
