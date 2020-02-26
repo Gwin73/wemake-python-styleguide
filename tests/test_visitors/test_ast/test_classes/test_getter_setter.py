@@ -58,6 +58,18 @@ class DataClass(object):
         ...
 """
 
+dataclass_getter_setter = """
+@dataclass
+class DataClass(object):
+    attribute: int
+
+    def get_attribute(self):
+        ...
+
+    def set_attribute(self):
+        ...
+"""
+
 child_getter_and_setter = """
 class TestParent(object):
     def __init__(self):
@@ -254,6 +266,7 @@ def test_class_mixed(
 
 @pytest.mark.parametrize('code', [
     class_attribute_instance_getter_setter,
+    dataclass_getter_setter,
 ])
 def test_invalid_getter_and_setter(
     assert_errors,
