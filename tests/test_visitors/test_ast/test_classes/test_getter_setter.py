@@ -87,7 +87,7 @@ class Template(object):
 class_attribute_template = """
 class Template(object):
     def __init__(self):
-        self.{0} = 1
+        self.{0}
 
     {1}
     def {2}(self):
@@ -147,12 +147,30 @@ def test_property_getter_and_setter(
 
 
 @pytest.mark.parametrize(('first', 'second', 'third'), [
-    ('attribute', '', 'get_attribute_some'),
-    ('attribute', '', 'some_get_attribute'),
-    ('attribute', '', 'get_some_attribute'),
-    ('attribute', '', 'attribute_get'),
-    ('some_attribute', '', 'get_attribute'),
-    ('attribute_some', '', 'get_attribute'),
+    ('attribute = 1', '', 'get_attribute_some'),
+    ('attribute = 1', '', 'some_get_attribute'),
+    ('attribute = 1', '', 'get_some_attribute'),
+    ('attribute = 1', '', 'attribute_get'),
+    ('some_attribute = 1', '', 'get_attribute'),
+    ('attribute_some = 1', '', 'get_attribute'),
+    ('attribute: int = 1', '', 'get_attribute_some'),
+    ('attribute: int = 1', '', 'some_get_attribute'),
+    ('attribute: int = 1', '', 'get_some_attribute'),
+    ('attribute: int = 1', '', 'attribute_get'),
+    ('some_attribute: int = 1', '', 'get_attribute'),
+    ('attribute_some: int = 1', '', 'get_attribute'),
+    ('attribute = self.other = 1', '', 'get_attribute_some'),
+    ('attribute = self.other = 1', '', 'some_get_attribute'),
+    ('attribute = self.other = 1', '', 'get_some_attribute'),
+    ('attribute = self.other = 1', '', 'attribute_get'),
+    ('some_attribute = self.other = 1', '', 'get_attribute'),
+    ('attribute_some = self.other = 1', '', 'get_attribute'),
+    ('attribute, self.other = 1, 2', '', 'get_attribute_some'),
+    ('attribute, self.other = 1, 2', '', 'some_get_attribute'),
+    ('attribute, self.other = 1, 2', '', 'get_some_attribute'),
+    ('attribute, self.other = 1, 2', '', 'attribute_get'),
+    ('some_attribute, self.other = 1, 2', '', 'get_attribute'),
+    ('attribute_some, self.other = 1, 2', '', 'get_attribute'),
 ])
 def test_nonmatching_attribute_getter_setter(
     assert_errors,
@@ -174,12 +192,12 @@ def test_nonmatching_attribute_getter_setter(
 
 
 @pytest.mark.parametrize(('first', 'second', 'third'), [
-    ('attribute', '', 'get_attribute'),
-    ('_attribute', '', 'get_attribute'),
-    ('__attribute', '', 'get_attribute'),
-    ('attribute', '@classmethod', 'set_attribute'),
-    ('_attribute', '@classmethod', 'set_attribute'),
-    ('__attribute', '@classmethod', 'set_attribute'),
+    ('attribute = 1', '', 'get_attribute'),
+    ('_attribute = 1', '', 'get_attribute'),
+    ('__attribute = 1', '', 'get_attribute'),
+    ('attribute = 1', '@classmethod', 'set_attribute'),
+    ('_attribute = 1', '@classmethod', 'set_attribute'),
+    ('__attribute= 1', '@classmethod', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
