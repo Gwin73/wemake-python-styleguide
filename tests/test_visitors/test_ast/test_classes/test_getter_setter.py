@@ -84,13 +84,22 @@ class Template(object):
         get_attribute(self)
 """
 
-class_attribute_template = """
+instance_attribute_template = """
 class Template(object):
     def __init__(self):
         self.{0}{1}{2}
 
     {3}
     def {4}(self):
+        ...
+"""
+
+class_attribute_template = """
+class Template(object):
+    {0}{1}
+
+    {2}
+    def {3}:
         ...
 """
 
@@ -173,7 +182,7 @@ def test_nonmatching_attribute_getter_setter(
     mode,
 ):
     """Testing that non matching attribute and getter/setter is allowed."""
-    test_instance = class_attribute_template.format(
+    test_instance = instance_attribute_template.format(
         access, attribute_name, assignment, annotation, method_name,
     )
     tree = parse_ast_tree(mode(test_instance))
@@ -207,7 +216,7 @@ def test_instance_and_class_getter_setter(
     mode,
 ):
     """Testing that instance/class attribute and getter/setter is prohibited."""
-    test_instance = class_attribute_template.format(
+    test_instance = instance_attribute_template.format(
         access, attribute_name, assignment, annotation, method_name,
     )
     tree = parse_ast_tree(mode(test_instance))
@@ -255,6 +264,43 @@ def test_invalid_getter_and_setter(
 ):
     """Testing that wrong use of getter/setter is prohibited."""
     tree = parse_ast_tree(mode(code))
+
+    visitor = WrongClassVisitor(default_options, tree=tree)
+    visitor.run()
+
+    assert_errors(visitor, [UnpythonicGetterSetterViolation])
+
+
+@pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
+    ('attribute', '', 'get_attribute()'),
+    ('attribute', '', 'get_attribute(self)'),
+    ('attribute', '@classmethod', 'get_attribute(self)'),
+
+    ('attribute', '', 'set_attribute()'),
+    ('attribute', '', 'set_attribute(self)'),
+    ('attribute', '@classmethod', 'set_attribute(self)'),
+])
+@pytest.mark.parametrize('assignment', [
+    ' = 1',
+    ': int = 1',
+    ' = other = 1',
+    ', other = 1, 2',
+])
+def test_class_attributes_getter_setters(
+    assert_errors,
+    parse_ast_tree,
+    default_options,
+    attribute_name,
+    annotation,
+    method_name,
+    assignment,
+    mode,
+):
+    """Testing that using getter/setters with class attributes is prohibited."""
+    test_instance = class_attribute_template.format(
+        attribute_name, assignment, annotation, method_name,
+    )
+    tree = parse_ast_tree(mode(test_instance))
 
     visitor = WrongClassVisitor(default_options, tree=tree)
     visitor.run()
