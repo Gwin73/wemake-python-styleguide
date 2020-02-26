@@ -110,6 +110,17 @@ class Test(object):
         ...
 """
 
+class_attribute_instance_getter_setter = """
+class Test(object):
+    attribute = 1
+
+    def get_attribute(self):
+        ...
+
+    def set_attribute(self):
+        ...
+"""
+
 
 @pytest.mark.parametrize('code', [
     module_getter_and_setter,
@@ -214,3 +225,22 @@ def test_class_mixed(
     visitor.run()
 
     assert_errors(visitor, [])
+
+
+@pytest.mark.parametrize('code', [
+    class_attribute_instance_getter_setter,
+])
+def test_invalid_getter_and_setter(
+    assert_errors,
+    parse_ast_tree,
+    default_options,
+    code,
+    mode,
+):
+    """Testing that wrong use of getter/setter is."""
+    tree = parse_ast_tree(mode(code))
+
+    visitor = WrongClassVisitor(default_options, tree=tree)
+    visitor.run()
+
+    assert_errors(visitor, [UnpythonicGetterSetterViolation])
