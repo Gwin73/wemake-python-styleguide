@@ -706,6 +706,7 @@ for element in range(10):
 
 
 class SomeOtherClass(object):
+<<<<<<< HEAD
     def few_raises_instance_method(self, parameter):
         if parameter == 1:
             raise ValueError('1')
@@ -715,6 +716,9 @@ class SomeOtherClass(object):
             raise Exception('3')
 
     def many_raises_instance_method(self, parameter):  # noqa: WPS236
+=======
+    def many_raises_instance_method(self, parameter):  # noqa: WPS235
+>>>>>>> Test: Removes integration tests and add unit tests which right now fail
         if parameter == 1:
             raise ValueError('1')
         if parameter == 2:
@@ -722,6 +726,7 @@ class SomeOtherClass(object):
         if parameter == 3:
             raise Exception('3')
         raise Exception('4')
+<<<<<<< HEAD
 
 <<<<<<< HEAD
     def many_raises_class_method(cls2, parameter):  # noqa: WPS236
@@ -750,3 +755,5 @@ if some_const == 2:
 if some_const == 3:
     raise Exception('3')
 raise Exception('4')
+=======
+>>>>>>> Test: Removes integration tests and add unit tests which right now fail
