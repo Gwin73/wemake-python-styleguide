@@ -178,7 +178,7 @@ class Test(object):
     child_getter_and_setter,
     nested_getter_and_setter,
     property_getter_and_setter,
-    #instance_attribute_class_getter_setter, Fails RN
+    # instance_attribute_class_getter_setter, Fails RN
     class_getter_and_setter_attributes,
     instance_getter_and_setter_attributes,
 ])
@@ -213,7 +213,7 @@ def test_valid_getter_and_setter(
     ('some_attribute', '', 'get_attribute'),
     ('attribute_some', '', 'get_attribute'),
 ])
-def test_nonmatching_attribute_getter_setter(
+def test_nonmatching_instance(
     assert_errors,
     parse_ast_tree,
     default_options,
@@ -339,7 +339,7 @@ def test_invalid_getter_and_setter(
     ' = other = 1',
     ', other = 1, 2',
 ])
-def test_class_attributes_getter_setters(
+def test_class_attributes_getter_setter(
     assert_errors,
     parse_ast_tree,
     default_options,
@@ -386,10 +386,11 @@ def test_class_attributes_getter_setters(
 @pytest.mark.parametrize('assignment', [
     ' = 1',
     ': int = 1',
+    ': int',
     ' = other = 1',
     ', other = 1, 2',
 ])
-def test_nonmatching_class_attributes(
+def test_nonmatching_class(
     assert_errors,
     parse_ast_tree,
     default_options,
