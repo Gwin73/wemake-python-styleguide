@@ -50,6 +50,20 @@ class DataClass(object):
     attribute: int
 
     @property
+    def attribute(self):
+        ...
+
+    @property
+    def attribute(self):
+        ...
+"""
+
+dataclass_incorrect_property_getter_setter = """
+@dataclass
+class DataClass(object):
+    attribute: int
+
+    @property
     def get_attribute(self):
         ...
 
@@ -181,6 +195,7 @@ class Test(object):
     instance_attribute_class_getter_setter,
     class_getter_and_setter_attributes,
     instance_getter_and_setter_attributes,
+    dataclass_property_getter_setter,
 ])
 def test_valid_getter_and_setter(
     assert_errors,
@@ -201,7 +216,7 @@ def test_valid_getter_and_setter(
 @pytest.mark.parametrize('code', [
     class_attribute_instance_getter_setter,
     dataclass_getter_setter,
-    dataclass_property_getter_setter,
+    dataclass_incorrect_property_getter_setter,
 ])
 def test_invalid_getter_and_setter(
     assert_errors,
