@@ -1162,5 +1162,4 @@ class TooManyRaisesViolation(ASTViolation):
     """
 
     error_template = 'Found too many raises in a function: {0}'
-
     code = 236
