@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from ast import Call, Yield, YieldFrom, arg
+from ast import Call, ClassDef, Yield, YieldFrom, arg
 from typing import Container, List, Optional
 
 from wemake_python_styleguide.compat.functions import get_posonlyargs
-from wemake_python_styleguide.logic import source
+from wemake_python_styleguide.logic import nodes, source
 from wemake_python_styleguide.logic.walk import is_contained
 from wemake_python_styleguide.types import (
     AnyFunctionDef,
@@ -105,9 +105,12 @@ def is_generator(node: AnyFunctionDef) -> bool:
     return False
 
 
-def is_getter_setter(node: AnyFunctionDef) -> bool:
-    """Check if name of node startswith `get_` or `set_`."""
-    return any(node.name.startswith(prefix) for prefix in ('get_', 'set_'))
+def is_get_set(node: ClassDef, sub: AnyFunctionDef) -> bool:
+    """Check if sub in context node and sub.name startswith `get_` or `set_`."""
+    correct_context = nodes.get_context(sub) == node
+    if correct_context:
+        return any(sub.name.startswith(prefix) for prefix in ('get_', 'set_'))
+    return False
 
 
 def check_decorator(node: AnyFunctionDef, name: str) -> bool:

@@ -7,6 +7,7 @@ from wemake_python_styleguide import types
 from wemake_python_styleguide.compat.aliases import AssignNodes, FunctionNodes
 from wemake_python_styleguide.constants import ALLOWED_BUILTIN_CLASSES
 from wemake_python_styleguide.logic import nodes
+from wemake_python_styleguide.logic.naming import name_nodes
 from wemake_python_styleguide.logic.naming.builtins import is_builtin_name
 from wemake_python_styleguide.logic.tree import functions
 
@@ -48,11 +49,21 @@ def get_attributes(
     return get_class_attributes(node), get_instance_attributes(node)
 
 
-def get_all_attributes(
+def get_all_attributes_str(
     node: ast.ClassDef,
-) -> Tuple[List[types.AnyAssign], List[ast.Attribute]]:
-    """Returns all class and instance attributes of a class."""
-    return get_all_class_attributes(node), get_instance_attributes(node)
+) -> Tuple[Set[str], Set[str]]:
+    """Returns names of all class and instance attributes of a class."""
+    class_attributes = get_all_class_attributes(node)
+    instance_attributes = get_instance_attributes(node)
+    class_attribute_names = {
+        class_attribute.lstrip('_') for class_attribute
+        in name_nodes.flat_variable_names(class_attributes)
+    }
+    instance_attribute_names = {
+        instance.attr.lstrip('_') for instance
+        in instance_attributes
+    }
+    return class_attribute_names, instance_attribute_names
 
 
 def get_class_attributes(
@@ -107,14 +118,12 @@ def get_set_postfixes(node: ast.ClassDef) -> Tuple[Set[str], Set[str]]:
     class_method_postfixes = set()
     instance_method_postfixes = set()
     for sub in ast.walk(node):
-        correct_context = nodes.get_context(sub) == node
-        if isinstance(sub, FunctionNodes) and correct_context:
-            if functions.is_getter_setter(sub):
-                if functions.check_decorator(sub, 'classmethod'):
-                    class_method_postfixes.add(sub.name.partition('get_')[2])
-                    class_method_postfixes.add(sub.name.partition('set_')[2])
-                    continue
-                instance_method_postfixes.add(sub.name.partition('get_')[2])
-                instance_method_postfixes.add(sub.name.partition('set_')[2])
+        if isinstance(sub, FunctionNodes) and functions.is_get_set(node, sub):
+            if functions.check_decorator(sub, 'classmethod'):
+                class_method_postfixes.add(sub.name.partition('get_')[2])
+                class_method_postfixes.add(sub.name.partition('set_')[2])
+                continue
+            instance_method_postfixes.add(sub.name.partition('get_')[2])
+            instance_method_postfixes.add(sub.name.partition('set_')[2])
 
     return class_method_postfixes, instance_method_postfixes

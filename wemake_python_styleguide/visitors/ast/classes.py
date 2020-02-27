@@ -17,6 +17,7 @@ from wemake_python_styleguide.logic.tree import (
     classes,
     functions,
     strings,
+    variables,
 )
 from wemake_python_styleguide.violations import best_practices as bp
 from wemake_python_styleguide.violations import consistency, oop
@@ -120,38 +121,27 @@ class WrongClassVisitor(base.BaseNodeVisitor):
         return False
 
     def _check_getters_setters_methods(self, node: ast.ClassDef) -> None:
-        class_attributes, instance_attributes = classes.get_all_attributes(node)
-        class_attribute_names = {
-            class_attribute.lstrip('_') for class_attribute
-            in name_nodes.flat_variable_names(class_attributes)
-        }
-        instance_attribute_names = {
-            instance.attr.lstrip('_') for instance
-            in instance_attributes
-        }
-
+        class_attributes, instance_attributes = classes.get_all_attributes_str(
+            node,
+        )
         class_postfixes, instance_postfixes = classes.get_set_postfixes(node)
 
-        for class_postfix in class_postfixes:
-            if any(name == class_postfix for name in class_attribute_names):
-                self.add_violation(
-                    oop.UnpythonicGetterSetterViolation(
-                        node,
-                        text=node.name,
-                    ),
-                )
-
-        for instance_postfix in instance_postfixes:
-            all_attribute_names = instance_attribute_names.union(
-                class_attribute_names,
+        if variables.name_in_postfix(node, class_attributes, class_postfixes):
+            self.add_violation(
+                oop.UnpythonicGetterSetterViolation(
+                    node,
+                    text=node.name,
+                ),
             )
-            if any(name == instance_postfix for name in all_attribute_names):
-                self.add_violation(
-                    oop.UnpythonicGetterSetterViolation(
-                        node,
-                        text=node.name,
-                    ),
-                )
+
+        all_attributes = instance_attributes.union(class_attributes)
+        if variables.name_in_postfix(node, all_attributes, instance_postfixes):
+            self.add_violation(
+                oop.UnpythonicGetterSetterViolation(
+                    node,
+                    text=node.name,
+                ),
+            )
 
 
 @final
