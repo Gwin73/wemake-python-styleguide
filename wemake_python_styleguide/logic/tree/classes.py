@@ -6,7 +6,7 @@ from typing import List, Optional, Set, Tuple, Union
 from wemake_python_styleguide import types
 from wemake_python_styleguide.compat.aliases import AssignNodes, FunctionNodes
 from wemake_python_styleguide.constants import ALLOWED_BUILTIN_CLASSES
-from wemake_python_styleguide.logic import nodes
+from wemake_python_styleguide.logic import nodes, source
 from wemake_python_styleguide.logic.naming.builtins import is_builtin_name
 
 
@@ -51,7 +51,7 @@ def get_all_attributes(
     node: ast.ClassDef,
 ) -> Tuple[List[types.AnyAssign], List[ast.Attribute]]:
     """Returns all class and instance attributes of a class."""
-    return get_annotated_class_attributes(node), get_instance_attributes(node)
+    return get_all_class_attributes(node), get_instance_attributes(node)
 
 
 def get_class_attributes(
@@ -68,7 +68,7 @@ def get_class_attributes(
     return class_attributes
 
 
-def get_annotated_class_attributes(
+def get_all_class_attributes(
     node: ast.ClassDef,
 ) -> List[Union[ast.Assign, ast.AnnAssign]]:
     """Returns all class attributes of a class."""
@@ -93,21 +93,38 @@ def get_instance_attributes(node: ast.ClassDef) -> List[ast.Attribute]:
             instance_attributes.append(sub)
     return instance_attributes
 
-
-def getter_setter_postfixes(node: ast.ClassDef) -> Set[str]:
+def get_set_postfixes(node: ast.ClassDef) -> Tuple[Set[str], Set[str]]:
     """
-    Return postfixes of all getter or setter methods.
+    Return postfixes of class getter or setter methods.
 
     get_class_attribute becomes class_attribute
 
     set_instance_attribute becomes instance_attribute
 
     """
-    method_postfixes = set()
+    class_method_postfixes = set()
+    instance_method_postfixes = set()
     for sub in ast.walk(node):
         correct_context = nodes.get_context(sub) == node
-        if isinstance(sub, FunctionNodes) and correct_context:
-            if any(sub.name.startswith(prefix) for prefix in ('get_', 'set_')):
-                method_postfixes.add(sub.name.partition('get_')[2])
-                method_postfixes.add(sub.name.partition('set_')[2])
-    return method_postfixes
+        if isinstance(sub, FunctionNodes) and correct_context and is_getter_setter(sub):
+            if check_decorator(sub, 'classmethod'):
+                class_method_postfixes.add(sub.name.partition('get_')[2])
+                class_method_postfixes.add(sub.name.partition('set_')[2])
+                continue
+            instance_method_postfixes.add(sub.name.partition('get_')[2])
+            instance_method_postfixes.add(sub.name.partition('set_')[2])
+
+    return class_method_postfixes, instance_method_postfixes
+
+
+def is_getter_setter(node: types.AnyFunctionDef) -> bool:
+    """Check if name of node startswith `get_` or `set_`."""
+    return any(node.name.startswith(prefix) for prefix in ('get_', 'set_'))
+
+
+def check_decorator(node: types.AnyFunctionDef, name: str) -> bool:
+    """Check if name is in decorator name."""
+    return any(
+        name == source.node_to_string(decorator)
+        for decorator in node.decorator_list
+    )
