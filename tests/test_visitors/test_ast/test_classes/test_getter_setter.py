@@ -198,13 +198,29 @@ def test_valid_getter_and_setter(
     assert_errors(visitor, [])
 
 
-@pytest.mark.parametrize('access', ['', '_', '__'])
-@pytest.mark.parametrize('assignment', [
-    ' = 1',
-    ': int = 1',
-    ' = self.other = 1',
-    ', self.other = 1, 2',
+@pytest.mark.parametrize('code', [
+    class_attribute_instance_getter_setter,
+    dataclass_getter_setter,
+    dataclass_property_getter_setter,
 ])
+def test_invalid_getter_and_setter(
+    assert_errors,
+    parse_ast_tree,
+    default_options,
+    code,
+    mode,
+):
+    """Testing that wrong use of getter/setter is prohibited."""
+    tree = parse_ast_tree(mode(code))
+
+    visitor = WrongClassVisitor(default_options, tree=tree)
+    visitor.run()
+
+    assert_errors(visitor, [UnpythonicGetterSetterViolation])
+
+
+@pytest.mark.parametrize('access', [''])
+@pytest.mark.parametrize('assignment', [' = 1'])
 @pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
     ('attribute', '', 'get_attribute_some'),
     ('attribute', '', 'some_get_attribute'),
@@ -245,15 +261,11 @@ def test_nonmatching_instance(
 ])
 @pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
     ('attribute', '', 'get_attribute'),
-    ('attribute', '@classmethod', 'set_attribute'),
-    ('_attribute', '@classmethod', 'set_attribute'),
-    ('__attribute', '@classmethod', 'set_attribute'),
+    ('attribute', '', 'set_attribute'),
     ('attribute', '@property', 'get_attribute'),
-    ('_attribute', '@property', 'get_attribute'),
-    ('__attribute', '@property', 'get_attribute'),
     ('attribute', '@attribute.setter', 'set_attribute'),
-    ('_attribute', '@attribute.setter', 'set_attribute'),
-    ('__attribute', '@attribute.setter', 'set_attribute'),
+    ('attribute', '@classmethod', 'get_attribute'),
+    ('attribute', '@classmethod', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
@@ -266,7 +278,7 @@ def test_instance_and_class_getter_setter(
     method_name,
     mode,
 ):
-    """Testing that class attribute and getter/setter is prohibited."""
+    """Testing that class/instance attribute and getter/setter is prohibited."""
     test_instance = instance_attribute_template.format(
         access, attribute_name, assignment, annotation, method_name,
     )
@@ -303,79 +315,7 @@ def test_class_mixed(
     assert_errors(visitor, [])
 
 
-@pytest.mark.parametrize('code', [
-    class_attribute_instance_getter_setter,
-    dataclass_getter_setter,
-    dataclass_property_getter_setter,
-])
-def test_invalid_getter_and_setter(
-    assert_errors,
-    parse_ast_tree,
-    default_options,
-    code,
-    mode,
-):
-    """Testing that wrong use of getter/setter is prohibited."""
-    tree = parse_ast_tree(mode(code))
-
-    visitor = WrongClassVisitor(default_options, tree=tree)
-    visitor.run()
-
-    assert_errors(visitor, [UnpythonicGetterSetterViolation])
-
-
 @pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
-    ('attribute', '', 'get_attribute()'),
-    ('attribute', '', 'get_attribute(self)'),
-    ('attribute', '@classmethod', 'get_attribute(self)'),
-
-    ('attribute', '', 'set_attribute()'),
-    ('attribute', '', 'set_attribute(self)'),
-    ('attribute', '@classmethod', 'set_attribute(self)'),
-])
-@pytest.mark.parametrize('assignment', [
-    ' = 1',
-    ': int = 1',
-    ' = other = 1',
-    ', other = 1, 2',
-])
-def test_class_attributes_getter_setter(
-    assert_errors,
-    parse_ast_tree,
-    default_options,
-    attribute_name,
-    annotation,
-    method_name,
-    assignment,
-    mode,
-):
-    """Testing that using getter/setters with class attributes is prohibited."""
-    test_instance = class_attribute_template.format(
-        attribute_name, assignment, annotation, method_name,
-    )
-    tree = parse_ast_tree(mode(test_instance))
-
-    visitor = WrongClassVisitor(default_options, tree=tree)
-    visitor.run()
-
-    assert_errors(visitor, [UnpythonicGetterSetterViolation])
-
-
-@pytest.mark.parametrize(('attribute_name', 'annotation', 'method_name'), [
-    ('attribute', '', 'get_attribute_some()'),
-    ('attribute', '', 'some_get_attribute()'),
-    ('attribute', '', 'get_some_attribute()'),
-    ('attribute', '', 'attribute_get()'),
-    ('some_attribute', '', 'get_attribute()'),
-    ('attribute_some', '', 'get_attribute()'),
-
-    ('attribute', '', 'get_attribute_some(self)'),
-    ('attribute', '', 'some_get_attribute(self)'),
-    ('attribute', '', 'get_some_attribute(self)'),
-    ('attribute', '', 'attribute_get(self)'),
-    ('some_attribute', '', 'get_attribute(self)'),
-    ('attribute_some', '', 'get_attribute(self)'),
-
     ('attribute', '@classmethod', 'get_attribute_some(self)'),
     ('attribute', '@classmethod', 'some_get_attribute(self)'),
     ('attribute', '@classmethod', 'get_some_attribute(self)'),
