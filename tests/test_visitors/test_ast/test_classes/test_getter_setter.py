@@ -178,7 +178,7 @@ class Test(object):
     child_getter_and_setter,
     nested_getter_and_setter,
     property_getter_and_setter,
-    # instance_attribute_class_getter_setter, Fails RN
+    instance_attribute_class_getter_setter,
     class_getter_and_setter_attributes,
     instance_getter_and_setter_attributes,
 ])
@@ -228,6 +228,8 @@ def test_invalid_getter_and_setter(
     ('attribute', '', 'attribute_get'),
     ('some_attribute', '', 'get_attribute'),
     ('attribute_some', '', 'get_attribute'),
+    ('attribute', '@classmethod', 'get_attribute'),
+    ('attribute', '@classmethod', 'set_attribute'),
 ])
 def test_nonmatching_instance(
     assert_errors,
@@ -264,8 +266,6 @@ def test_nonmatching_instance(
     ('attribute', '', 'set_attribute'),
     ('attribute', '@property', 'get_attribute'),
     ('attribute', '@attribute.setter', 'set_attribute'),
-    ('attribute', '@classmethod', 'get_attribute'),
-    ('attribute', '@classmethod', 'set_attribute'),
 ])
 def test_instance_and_class_getter_setter(
     assert_errors,
