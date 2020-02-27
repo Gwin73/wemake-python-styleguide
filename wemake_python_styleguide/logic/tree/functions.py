@@ -103,3 +103,16 @@ def is_generator(node: AnyFunctionDef) -> bool:
         if is_contained(node=body_item, to_check=(Yield, YieldFrom)):
             return True
     return False
+
+
+def is_getter_setter(node: AnyFunctionDef) -> bool:
+    """Check if name of node startswith `get_` or `set_`."""
+    return any(node.name.startswith(prefix) for prefix in ('get_', 'set_'))
+
+
+def check_decorator(node: AnyFunctionDef, name: str) -> bool:
+    """Check if name is in decorator name."""
+    return any(
+        name == source.node_to_string(decorator)
+        for decorator in node.decorator_list
+    )
