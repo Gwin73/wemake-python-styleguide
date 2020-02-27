@@ -57,7 +57,7 @@ def test_raises_wrong_count(
     code,
     mode,
 ):
-    """Testing that many raises raises a warning."""
+    """Testing that many raise statements raises a warning."""
     tree = parse_ast_tree(mode(code))
 
     option_values = options(max_raises=1)
