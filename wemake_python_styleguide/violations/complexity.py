@@ -1137,10 +1137,10 @@ class TooManyImportedModuleMembersViolation(ASTViolation):
 @final
 class TooManyRaisesViolation(ASTViolation):
     """
-    Forbids too many raise statements in a function.
+    Forbids too many ``raise`` statements in a function.
 
     Reasoning:
-        Too many raise statements in a function make the code
+        Too many ``raise`` statements in a function make the code
         untraceable and overcomplicated.
 
     Solution:
