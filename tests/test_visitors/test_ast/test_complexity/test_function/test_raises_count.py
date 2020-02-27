@@ -20,7 +20,7 @@ lambda: SomeException if some else SomeOtherException
 """
 
 function_template = """
-def function(parameter): 
+def function(parameter):
     {0}
 """
 
@@ -44,7 +44,9 @@ class Test(object):
         {0}
 """
 
-no_raises_block = """..."""
+no_raises_block = """
+...
+"""
 
 raises_block = """
 if some:
@@ -64,7 +66,7 @@ raise SomeOtherException
     module_many_raises,
     lambda_many_raises,
 ])
-def test_asserts_correct_count_1(
+def test_asserts_correct_count1(
     assert_errors,
     parse_ast_tree,
     code,
@@ -73,8 +75,7 @@ def test_asserts_correct_count_1(
     """Testing that raises counted correctly."""
     tree = parse_ast_tree(code)
 
-    option_values = options(max_raises=1)
-    visitor = FunctionComplexityVisitor(option_values, tree=tree)
+    visitor = FunctionComplexityVisitor(default_options, tree=tree)
     visitor.run()
 
     assert_errors(visitor, [])
@@ -91,7 +92,7 @@ def test_asserts_correct_count_1(
     raises_block,
     nested_raises_block,
 ])
-def test_raises_correct_count_2(
+def test_raises_correct_count2(
     assert_errors,
     parse_ast_tree,
     context,
@@ -134,4 +135,3 @@ def test_raises_wrong_count(
 
     assert_errors(visitor, [TooManyRaisesViolation])
     assert_error_text(visitor, '2', option_values.max_raises)
-    
