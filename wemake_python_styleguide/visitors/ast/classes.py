@@ -142,9 +142,10 @@ class WrongClassVisitor(base.BaseNodeVisitor):
                 )
 
         for instance_postfix in instance_postfixes:
-            if any(name == instance_postfix for name in (
-                instance_attribute_names.union(class_attribute_names)
-                )):
+            all_attribute_names = instance_attribute_names.union(
+                class_attribute_names,
+            )
+            if any(name == instance_postfix for name in all_attribute_names):
                 self.add_violation(
                     oop.UnpythonicGetterSetterViolation(
                         node,
