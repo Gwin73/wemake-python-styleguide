@@ -36,11 +36,11 @@ class Test(object):
         self.attribute = 1
 
     @property
-    def get_attribute(self):
+    def attribute(self):
         ...
 
     @property.setter
-    def set_attribute(self):
+    def attribute(self):
         ...
 """
 
@@ -96,6 +96,21 @@ class Template(object):
         get_attribute(self)
 """
 
+class_getter_and_setter_attributes = """
+class Test(object):
+    attribute = 1
+    get_attribute = 1
+    set_attribute = 1
+"""
+
+instance_getter_and_setter_attributes = """
+class Test(object):
+    def __init__(self):
+        self.attribute = 1
+        self.get_attribute = 1
+        self.set_attribute = 1
+"""
+
 instance_attribute_template = """
 class Template(object):
     def __init__(self):
@@ -103,6 +118,31 @@ class Template(object):
 
     {3}
     def {4}(self):
+        ...
+"""
+
+class_attribute_instance_getter_setter = """
+class Test(object):
+    attribute = 1
+
+    def get_attribute(self):
+        ...
+
+    def set_attribute(self):
+        ...
+"""
+
+instance_attribute_class_getter_setter = """
+class Test(object):
+    def __init__(self):
+        self.attribute = 1
+
+    @classmethod
+    def get_attribute(self):
+        ...
+
+    @classmethod
+    def set_attribute(self):
         ...
 """
 
@@ -131,32 +171,25 @@ class Test(object):
         ...
 """
 
-class_attribute_instance_getter_setter = """
-class Test(object):
-    attribute = 1
-
-    def get_attribute(self):
-        ...
-
-    def set_attribute(self):
-        ...
-"""
-
 
 @pytest.mark.parametrize('code', [
     module_getter_and_setter,
     static_getter_and_setter,
     child_getter_and_setter,
     nested_getter_and_setter,
+    property_getter_and_setter,
+    #instance_attribute_class_getter_setter, Fails RN
+    class_getter_and_setter_attributes,
+    instance_getter_and_setter_attributes,
 ])
-def test_property_getter_and_setter(
+def test_valid_getter_and_setter(
     assert_errors,
     parse_ast_tree,
     default_options,
     code,
     mode,
 ):
-    """Testing that attribute, getter and setter is allowed outside of class."""
+    """Testing that correct usage of getter/setter is allowed."""
     tree = parse_ast_tree(mode(code))
 
     visitor = WrongClassVisitor(default_options, tree=tree)
@@ -273,7 +306,6 @@ def test_class_mixed(
 @pytest.mark.parametrize('code', [
     class_attribute_instance_getter_setter,
     dataclass_getter_setter,
-    property_getter_and_setter,
     dataclass_property_getter_setter,
 ])
 def test_invalid_getter_and_setter(
