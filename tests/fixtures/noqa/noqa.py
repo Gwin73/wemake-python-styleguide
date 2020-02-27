@@ -694,7 +694,7 @@ extra_new_line = [  # noqa: WPS355
 *numbers, = [4, 7]  # noqa: WPS356
 
 
-def many_raises_function(parameter):  # noqa: WPS235
+def many_raises_function(parameter):  # noqa: WPS236
     if parameter == 1:
         raise ValueError('1')
     if parameter == 2:
