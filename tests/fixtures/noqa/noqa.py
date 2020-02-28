@@ -332,7 +332,7 @@ class SomeClass(FirstParent,  # noqa: WPS317
 
 
 if SomeClass:
-    my_print(SomeClass)  # noqa: WPS318
+        my_print(SomeClass)  # noqa: WPS318
 
 my_print(
     1,

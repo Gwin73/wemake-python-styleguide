@@ -1127,6 +1127,9 @@ class TooManyImportedModuleMembersViolation(ASTViolation):
         This rule is configurable with ``--max-import-from-members``.
         Default:
         :str:`wemake_python_styleguide.options.defaults.MAX_IMPORT_FROM_MEMBERS`
+
+    .. versionadded:: 0.15.0
+
     """
 
     error_template = 'Found too many imported names from a module: {0}'

@@ -15,18 +15,8 @@ from wemake_python_styleguide.types import (
     AnyFunctionDefAndLambda,
     AnyNodes,
 )
+from wemake_python_styleguide.violations import complexity
 from wemake_python_styleguide.violations.base import BaseViolation
-from wemake_python_styleguide.violations.complexity import (
-    CognitiveComplexityViolation,
-    CognitiveModuleComplexityViolation,
-    TooManyArgumentsViolation,
-    TooManyAssertsViolation,
-    TooManyAwaitsViolation,
-    TooManyExpressionsViolation,
-    TooManyLocalsViolation,
-    TooManyRaisesViolation,
-    TooManyReturnsViolation,
-)
 from wemake_python_styleguide.visitors.base import BaseNodeVisitor
 from wemake_python_styleguide.visitors.decorators import alias
 
@@ -183,7 +173,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         for var_node, variables in self._counter.variables.items():
             if len(variables) > self.options.max_local_variables:
                 self.add_violation(
-                    TooManyLocalsViolation(
+                    complexity.TooManyLocalsViolation(
                         var_node,
                         text=str(len(variables)),
                         baseline=self.options.max_local_variables,
@@ -193,7 +183,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         for exp_node, expressions in self._counter.expressions.items():
             if expressions > self.options.max_expressions:
                 self.add_violation(
-                    TooManyExpressionsViolation(
+                    complexity.TooManyExpressionsViolation(
                         exp_node,
                         text=str(expressions),
                         baseline=self.options.max_expressions,
@@ -213,27 +203,27 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
             (
                 self._counter.arguments,
                 self.options.max_arguments,
-                TooManyArgumentsViolation,
+                complexity.TooManyArgumentsViolation,
             ),
             (
                 self._counter.exit_metrics.returns,
                 self.options.max_returns,
-                TooManyReturnsViolation,
+                complexity.TooManyReturnsViolation,
             ),
             (
                 self._counter.awaits,
                 self.options.max_awaits,
-                TooManyAwaitsViolation,
+                complexity.TooManyAwaitsViolation,
             ),
             (
                 self._counter.asserts,
                 self.options.max_asserts,
-                TooManyAssertsViolation,
+                complexity.TooManyAssertsViolation,
             ),
             (
                 self._counter.exit_metrics.raises,
                 self.options.max_raises,
-                TooManyRaisesViolation,
+                complexity.TooManyRaisesViolation,
             ),
         ]
 
@@ -277,7 +267,7 @@ class CognitiveComplexityVisitor(BaseNodeVisitor):
 
             if score > self.options.max_cognitive_score:
                 self.add_violation(
-                    CognitiveComplexityViolation(
+                    complexity.CognitiveComplexityViolation(
                         function,
                         text=str(score),
                         baseline=self.options.max_cognitive_score,
@@ -287,7 +277,7 @@ class CognitiveComplexityVisitor(BaseNodeVisitor):
         average = total / len(self._functions)
         if average > self.options.max_cognitive_average:
             self.add_violation(
-                CognitiveModuleComplexityViolation(
+                complexity.CognitiveModuleComplexityViolation(
                     text=str(round(average, 1)),
                     baseline=self.options.max_cognitive_average,
                 ),
