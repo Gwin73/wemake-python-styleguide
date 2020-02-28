@@ -62,7 +62,6 @@ class _ComplexityCounter(object):
     )
 
     def __init__(self) -> None:
-        self.metrics = attr.asdict(_ComplexityMetrics())
         self.metr = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
@@ -90,7 +89,7 @@ class _ComplexityCounter(object):
         What is treated as a local variable?
         Check ``TooManyLocalsViolation`` documentation.
         """
-        function_variables = self.metrics[variables][function]
+        function_variables = self.metr.variables[function]
         if variable_def.id not in function_variables:
             if access.is_unused(variable_def.id):
                 return
@@ -110,11 +109,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: self.metrics[returns],
-            ast.Expr: self.metrics[expressions],
-            ast.Await: self.metrics[awaits],
-            ast.Assert: self.metrics[asserts],
-            ast.Raise: self.metrics[raises],
+            ast.Return: self.metr.returns,
+            ast.Expr: self.metr.expressions,
+            ast.Await: self.metr.awaits,
+            ast.Assert: self.metr.asserts,
+            ast.Raise: self.metr.raises,
         }
 
         for types, counter in error_counters.items():
@@ -174,7 +173,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         self.generic_visit(node)
 
     def _check_function_internals(self) -> None:
-        for var_node, variables in self._counter.metrics[variables].items():
+        for var_node, variables in self._counter.metr.variables.items():
             if len(variables) > self.options.max_local_variables:
                 self.add_violation(
                     TooManyLocalsViolation(
@@ -184,8 +183,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                     ),
                 )
 
-        for exp_node, expressions in\
-            self._counter.metrics[expressions].items():
+        for exp_node, expressions in self._counter.metr.expressions.items():
             if expressions > self.options.max_expressions:
                 self.add_violation(
                     TooManyExpressionsViolation(
@@ -206,27 +204,27 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
     def _function_checks(self) -> List[_CheckRule]:
         return [
             (
-                self._counter.metrics[arguments],
+                self._counter.metr.arguments,
                 self.options.max_arguments,
                 TooManyArgumentsViolation,
             ),
             (
-                self._counter.metrics[returns],
+                self._counter.metr.returns,
                 self.options.max_returns,
                 TooManyReturnsViolation,
             ),
             (
-                self._counter.metrics[awaits],
+                self._counter.metr.awaits,
                 self.options.max_awaits,
                 TooManyAwaitsViolation,
             ),
             (
-                self._counter.metrics[asserts],
+                self._counter.metr.asserts,
                 self.options.max_asserts,
                 TooManyAssertsViolation,
             ),
             (
-                self._counter.metrics[raises],
+                self._counter.metr.raises,
                 self.options.max_raises,
                 TooManyRaisesViolation,
             ),
