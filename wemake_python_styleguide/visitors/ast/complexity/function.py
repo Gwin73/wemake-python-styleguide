@@ -48,8 +48,8 @@ class _ComplexityMetrics(object):
     asserts: _FuncCount = attr.ib(default=defaultdict(int))
     expressions: _FuncCount = attr.ib(default=defaultdict(int))
     variables: _FuncCountVars = attr.ib(default=defaultdict(
-            list,
-        ))
+        list,
+    ))
 
 
 @final
