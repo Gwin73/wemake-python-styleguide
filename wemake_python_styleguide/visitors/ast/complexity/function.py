@@ -40,14 +40,15 @@ class _ComplexityMetrics(object):
     Stores counters of function internals.
     """
 
-    _not_contain_locals: ClassVar[AnyNodes] = (
+    not_contain_locals: ClassVar[AnyNodes] = (
         ast.comprehension,
     )
 
     returns: _FunctionCounter = attr.ib(default=defaultdict(int))
     raises: _FunctionCounter = attr.ib(default=defaultdict(int))
     awaits: _FunctionCounter = attr.ib(
-        default=defaultdict(int))  # noqa: WPS204
+        default=defaultdict(int)
+    )  # noqa: WPS204
     arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
     asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
     expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
@@ -94,7 +95,10 @@ class _ComplexityCounter(object):
             if access.is_unused(variable_def.id):
                 return
 
-            if isinstance(get_parent(variable_def), self.metr._not_contain_locals):
+            if isinstance(
+                get_parent(variable_def),
+                self.metr.not_contain_locals
+            ):
                 return
 
             function_variables.append(variable_def.id)
