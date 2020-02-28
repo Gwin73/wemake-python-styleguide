@@ -62,11 +62,11 @@ class _ComplexityCounter(object):
             list,
         )
         self.metr = _ComplexityMetrics()
-        self.metr.returns()
-        self.metr.raises()
-        self.metr.awaits()
-        self.metr.asserts()
-        self.metr.expressions()
+        self.metr.returns[0]
+        self.metr.raises[0]
+        self.metr.awaits[0]
+        self.metr.asserts[0]
+        self.metr.expressions[0]
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
