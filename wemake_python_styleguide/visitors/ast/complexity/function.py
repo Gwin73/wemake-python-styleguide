@@ -54,11 +54,11 @@ class _ComplexityMetrics(object):
 
 @final
 class _ComplexityCounter(object):
+    """Helper class to encapsulate logic from the visitor."""
+
     _not_contain_locals: ClassVar[AnyNodes] = (
         ast.comprehension,
     )
-
-    """Helper class to encapsulate logic from the visitor."""
 
     def __init__(self) -> None:
         self.metr = _ComplexityMetrics()
@@ -175,7 +175,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
 
     def _check_function_internals(self) -> None:
         for var_node, variables in self._counter.metr.variables.items():
-            if len(variables) > self.options.max_local_variables:
+            if len(variables) - 1 > self.options.max_local_variables:
                 self.add_violation(
                     complexity.TooManyLocalsViolation(
                         var_node,
