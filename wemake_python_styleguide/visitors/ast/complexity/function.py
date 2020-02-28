@@ -33,7 +33,7 @@ _NodeTypeHandler = Dict[
 
 
 @final
-@attr.dataclass(Frozen = False)
+@attr.dataclass(frozen=False)
 class _ComplexityMetrics(object):
     """
     Helper class.
