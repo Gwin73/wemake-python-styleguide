@@ -226,7 +226,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 TooManyAssertsViolation,
             ),
             (
-                attr.fields(self._counter.metrics).raises
+                attr.fields(self._counter.metrics).raises,
                 self.options.max_raises,
                 TooManyRaisesViolation,
             ),
