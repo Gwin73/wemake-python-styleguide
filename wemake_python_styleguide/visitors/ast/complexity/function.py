@@ -42,7 +42,8 @@ class _ComplexityMetrics(object):
 
     returns: _FunctionCounter = attr.ib(default=defaultdict(int))
     raises: _FunctionCounter = attr.ib(default=defaultdict(int))
-    awaits: _FunctionCounter = attr.ib(default=defaultdict(int))  # noqa: WPS204
+    awaits: _FunctionCounter =\
+        attr.ib(default=defaultdict(int))  # noqa: WPS204
     arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
     asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
     expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
@@ -60,10 +61,12 @@ class _ComplexityCounter(object):
         ast.comprehension,
     )
 
+    def __init__(self) -> None:
+        self.metrics = attr.asdict(_ComplexityMetrics())
+
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        attr.fields(_ComplexityMetrics).arguments[node]\
-            = len(functions.get_all_arguments(node))
+        self.metrics[arguments][node] = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
         """
@@ -106,11 +109,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: attr.fields(_ComplexityMetrics).returns,
-            ast.Expr: attr.fields(_ComplexityMetrics).expressions,
-            ast.Await: attr.fields(_ComplexityMetrics).awaits,
-            ast.Assert: attr.fields(_ComplexityMetrics).asserts,
-            ast.Raise: attr.fields(_ComplexityMetrics).raises,
+            ast.Return: self.metrics[returns],
+            ast.Expr: self.metrics[expressions],
+            ast.Await: self.metrics[awaits],
+            ast.Assert: self.metrics[asserts],
+            ast.Raise: self.metrics[raises],
         }
 
         for types, counter in error_counters.items():
@@ -170,8 +173,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         self.generic_visit(node)
 
     def _check_function_internals(self) -> None:
-        for var_node, variables\
-            in attr.fields(self._counter.metrics).variables.items():
+        for var_node, variables in self._counter.metrics[variables].items():
             if len(variables) > self.options.max_local_variables:
                 self.add_violation(
                     TooManyLocalsViolation(
@@ -181,8 +183,8 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                     ),
                 )
 
-        for exp_node, expressions\
-            in attr.fields(self._counter.metrics).expressions.items():
+        for exp_node, expressions in\
+            self._counter.metrics[expressions].items():
             if expressions > self.options.max_expressions:
                 self.add_violation(
                     TooManyExpressionsViolation(
@@ -203,27 +205,27 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
     def _function_checks(self) -> List[_CheckRule]:
         return [
             (
-                attr.fields(self._counter.metrics).arguments,
+                self._counter.metrics[arguments],
                 self.options.max_arguments,
                 TooManyArgumentsViolation,
             ),
             (
-                attr.fields(self._counter.metrics).returns,
+                self._counter.metrics[returns],
                 self.options.max_returns,
                 TooManyReturnsViolation,
             ),
             (
-                attr.fields(self._counter.metrics).awaits,
+                self._counter.metrics[awaits],
                 self.options.max_awaits,
                 TooManyAwaitsViolation,
             ),
             (
-                attr.fields(self._counter.metrics).asserts,
+                self._counter.metrics[asserts],
                 self.options.max_asserts,
                 TooManyAssertsViolation,
             ),
             (
-                attr.fields(self._counter.metrics).raises,
+                self._counter.metrics[raises],
                 self.options.max_raises,
                 TooManyRaisesViolation,
             ),
