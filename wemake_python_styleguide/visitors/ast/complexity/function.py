@@ -65,7 +65,7 @@ class _ComplexityCounter(object):
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        self.metr.arguments[node] = len(functions.get_all_arguments(node))
+        self.arguments[node] = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
         """
@@ -205,7 +205,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
     def _function_checks(self) -> List[_CheckRule]:
         return [
             (
-                self._counter.metr.arguments,
+                self._counter.arguments,
                 self.options.max_arguments,
                 complexity.TooManyArgumentsViolation,
             ),
