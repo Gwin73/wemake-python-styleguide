@@ -33,7 +33,7 @@ _NodeTypeHandler = Dict[
 
 
 @final
-@attr.dataclass
+@attr.dataclass(Frozen = False)
 class _ComplexityMetrics(object):
     """
     Helper class.
@@ -62,6 +62,11 @@ class _ComplexityCounter(object):
             list,
         )
         self.metr = _ComplexityMetrics()
+        self.metr.returns()
+        self.metr.raises()
+        self.metr.awaits()
+        self.metr.asserts()
+        self.metr.expressions()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
