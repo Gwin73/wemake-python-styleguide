@@ -176,7 +176,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         for var_node, variables in self._counter.metr.variables.items():
             if len(variables) > self.options.max_local_variables:
                 self.add_violation(
-                    TooManyLocalsViolation(
+                    complexity.TooManyLocalsViolation(
                         var_node,
                         text=str(len(variables)),
                         baseline=self.options.max_local_variables,
@@ -186,7 +186,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         for exp_node, expressions in self._counter.metr.expressions.items():
             if expressions > self.options.max_expressions:
                 self.add_violation(
-                    TooManyExpressionsViolation(
+                    complexity.TooManyExpressionsViolation(
                         exp_node,
                         text=str(expressions),
                         baseline=self.options.max_expressions,
@@ -206,27 +206,27 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
             (
                 self._counter.metr.arguments,
                 self.options.max_arguments,
-                TooManyArgumentsViolation,
+                complexity.TooManyArgumentsViolation,
             ),
             (
                 self._counter.metr.returns,
                 self.options.max_returns,
-                TooManyReturnsViolation,
+                complexity.TooManyReturnsViolation,
             ),
             (
                 self._counter.metr.awaits,
                 self.options.max_awaits,
-                TooManyAwaitsViolation,
+                complexity.TooManyAwaitsViolation,
             ),
             (
                 self._counter.metr.asserts,
                 self.options.max_asserts,
-                TooManyAssertsViolation,
+                complexity.TooManyAssertsViolation,
             ),
             (
                 self._counter.metr.raises,
                 self.options.max_raises,
-                TooManyRaisesViolation,
+                complexity.TooManyRaisesViolation,
             ),
         ]
 
