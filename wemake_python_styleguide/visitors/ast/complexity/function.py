@@ -58,6 +58,10 @@ class _ComplexityMetrics(object):
 
 @final
 class _ComplexityCounter(object):
+    _not_contain_locals: ClassVar[AnyNodes] = (
+        ast.comprehension,
+    )
+
     """Helper class to encapsulate logic from the visitor."""
 
     def __init__(self) -> None:
@@ -94,7 +98,7 @@ class _ComplexityCounter(object):
                 return
 
             parent = get_parent(variable_def)
-            no_locals = self.metr.not_contain_locals
+            no_locals = self._not_contain_locals
             if isinstance(parent, no_locals):
                 return
 
