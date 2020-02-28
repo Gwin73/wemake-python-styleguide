@@ -37,7 +37,7 @@ class _ComplexityMetrics(object):
     """
     Helper class.
 
-    Stores counters of statements that exit from a function.
+    Stores counters of function internals.
     """
 
     returns: _FunctionCounter = attr.ib(default=defaultdict(int))
@@ -66,7 +66,7 @@ class _ComplexityCounter(object):
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        self.metrics[arguments][node] = len(functions.get_all_arguments(node))
+        (self.metrics)[arguments][node] = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
         """
@@ -89,7 +89,7 @@ class _ComplexityCounter(object):
         What is treated as a local variable?
         Check ``TooManyLocalsViolation`` documentation.
         """
-        function_variables = self.variables[function]
+        function_variables = self.metrics[variables][function]
         if variable_def.id not in function_variables:
             if access.is_unused(variable_def.id):
                 return
