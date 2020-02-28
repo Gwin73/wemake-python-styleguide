@@ -41,13 +41,13 @@ class _ComplexityMetrics(object):
     Stores counters of function internals.
     """
 
-    returns: _FuncCount = attr.ib(default=defaultdict(0))
-    raises: _FuncCount = attr.ib(default=defaultdict(0))
-    awaits: _FuncCount = attr.ib(default=defaultdict(0))  # noqa: WPS204
-    arguments: _FuncCountWithLambda = attr.ib(default=defaultdict(0))
-    asserts: _FuncCount = attr.ib(default=defaultdict(0))
-    expressions: _FuncCount = attr.ib(default=defaultdict(0))
-    variables: _FuncCountVars = attr.ib(default=defaultdict(
+    returns: _FuncCount = attr.ib(default=defaultdict(int))
+    raises: _FuncCount = attr.ib(default=defaultdict(int))
+    awaits: _FuncCount = attr.ib(default=defaultdict(int))  # noqa: WPS204
+    arguments: _FuncCountWithLambda = attr.ib(default=defaultdict(int))
+    asserts: _FuncCount = attr.ib(default=defaultdict(int))
+    expressions: _FuncCount = attr.ib(default=defaultdict(int))
+    variables: _FuncCountVars = attr.ib(factory=defaultdict(
         list,
     ))
 
@@ -175,7 +175,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
 
     def _check_function_internals(self) -> None:
         for var_node, variables in self._counter.metr.variables.items():
-            if len(variables) - 1 > self.options.max_local_variables:
+            if len(variables) > self.options.max_local_variables:
                 self.add_violation(
                     complexity.TooManyLocalsViolation(
                         var_node,
