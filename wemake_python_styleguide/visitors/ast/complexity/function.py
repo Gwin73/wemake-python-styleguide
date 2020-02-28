@@ -47,9 +47,6 @@ class _ComplexityMetrics(object):
     arguments: _FuncCountWithLambda = attr.ib(default=defaultdict(int))
     asserts: _FuncCount = attr.ib(default=defaultdict(int))
     expressions: _FuncCount = attr.ib(default=defaultdict(int))
-    variables: _FuncCountVars = attr.ib(factory=defaultdict(
-        list,
-    ))
 
 
 @final
@@ -61,6 +58,9 @@ class _ComplexityCounter(object):
     )
 
     def __init__(self) -> None:
+        self.variables: _FuncCountVars = defaultdict(
+            list,
+        )
         self.metr = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
@@ -88,7 +88,7 @@ class _ComplexityCounter(object):
         What is treated as a local variable?
         Check ``TooManyLocalsViolation`` documentation.
         """
-        function_variables = self.metr.variables[function]
+        function_variables = self.variables[function]
         if variable_def.id not in function_variables:
             if access.is_unused(variable_def.id):
                 return
@@ -174,7 +174,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         self.generic_visit(node)
 
     def _check_function_internals(self) -> None:
-        for var_node, variables in self._counter.metr.variables.items():
+        for var_node, variables in self._counter.variables.items():
             if len(variables) > self.options.max_local_variables:
                 self.add_violation(
                     complexity.TooManyLocalsViolation(
