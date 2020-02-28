@@ -60,12 +60,9 @@ class _ComplexityCounter(object):
         ast.comprehension,
     )
 
-    def __init__(self) -> None:
-        self.metrics = _ComplexityMetrics()
-
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        attr.fields(self.metrics).arguments[node]\
+        attr.fields(_ComplexityMetrics).arguments[node]\
             = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
@@ -109,11 +106,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: attr.fields(self.metrics).returns,
-            ast.Expr: attr.fields(self.metrics).expressions,
-            ast.Await: attr.fields(self.metrics).awaits,
-            ast.Assert: attr.fields(self.metrics).asserts,
-            ast.Raise: attr.fields(self.metrics).raises,
+            ast.Return: attr.fields(_ComplexityMetrics).returns,
+            ast.Expr: attr.fields(_ComplexityMetrics).expressions,
+            ast.Await: attr.fields(_ComplexityMetrics).awaits,
+            ast.Assert: attr.fields(_ComplexityMetrics).asserts,
+            ast.Raise: attr.fields(_ComplexityMetrics).raises,
         }
 
         for types, counter in error_counters.items():
