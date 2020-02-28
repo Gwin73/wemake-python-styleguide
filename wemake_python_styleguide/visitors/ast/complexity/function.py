@@ -43,19 +43,19 @@ class _ComplexityMetrics(object):
     _not_contain_locals: ClassVar[AnyNodes] = (
         ast.comprehension,
     )
-    returns: _FunctionCounter = attr.ib(default=defaultdict(int))
-    raises: _FunctionCounter = attr.ib(default=defaultdict(int))
-    awaits: _FunctionCounter = attr.ib(
-        default=defaultdict(
-            int
-        ))  # noqa: WPS204
-    arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
-    asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
-    expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
-    variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
-        default=defaultdict(
-            list,
-        ))
+
+    def __attrs_post_init__(self):
+        returns: _FunctionCounter = attr.ib(default=defaultdict(int))
+        raises: _FunctionCounter = attr.ib(default=defaultdict(int))
+        awaits: _FunctionCounter = attr.ib(
+            default=defaultdict(int))  # noqa: WPS204
+        arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
+        asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
+        expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
+        variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
+            default=defaultdict(
+                list,
+            ))
 
 
 @final
