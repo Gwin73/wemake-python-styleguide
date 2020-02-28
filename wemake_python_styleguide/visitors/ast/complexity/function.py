@@ -21,13 +21,14 @@ from wemake_python_styleguide.violations.base import BaseViolation
 from wemake_python_styleguide.visitors.base import BaseNodeVisitor
 from wemake_python_styleguide.visitors.decorators import alias
 
-_FunctionCounter = DefaultDict[AnyFunctionDef, int]
-_FunctionCounterWithLambda = DefaultDict[AnyFunctionDefAndLambda, int]
-_AnyFunctionCounter = Union[_FunctionCounter, _FunctionCounterWithLambda]
-_CheckRule = Tuple[_AnyFunctionCounter, int, Type[BaseViolation]]
+_FuncCount = DefaultDict[AnyFunctionDef, int]
+_FuncCountWithLambda = DefaultDict[AnyFunctionDefAndLambda, int]
+_FuncCountVars = DefaultDict[AnyFunctionDef, List[str]]
+_AnyFuncCount = Union[_FuncCount, _FuncCountWithLambda]
+_CheckRule = Tuple[_AnyFuncCount, int, Type[BaseViolation]]
 _NodeTypeHandler = Dict[
     Union[type, Tuple[type, ...]],
-    _FunctionCounter,
+    _FuncCount,
 ]
 
 
@@ -44,16 +45,13 @@ class _ComplexityMetrics(object):
         ast.comprehension,
     )
 
-    returns: _FunctionCounter = attr.ib(default=defaultdict(int))
-    raises: _FunctionCounter = attr.ib(default=defaultdict(int))
-    awaits: _FunctionCounter = attr.ib(
-        default=defaultdict(int)
-    )  # noqa: WPS204
-    arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
-    asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
-    expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
-    variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
-        default=defaultdict(
+    returns: _FuncCount = attr.ib(default=defaultdict(int))
+    raises: _FuncCount = attr.ib(default=defaultdict(int))
+    awaits: _FuncCount = attr.ib(default=defaultdict(int))  # noqa: WPS204
+    arguments: _FuncCountWithLambda = attr.ib(default=defaultdict(int))
+    asserts: _FuncCount = attr.ib(default=defaultdict(int))
+    expressions: _FuncCount = attr.ib(default=defaultdict(int))
+    variables: _FuncCountVars = attr.ib(default=defaultdict(
             list,
         ))
 
@@ -95,10 +93,9 @@ class _ComplexityCounter(object):
             if access.is_unused(variable_def.id):
                 return
 
-            if isinstance(
-                get_parent(variable_def),
-                self.metr.not_contain_locals
-            ):
+            parent = get_parent(variable_def)
+            no_locals = self.metr.not_contain_locals
+            if isinstance(parent, no_locals):
                 return
 
             function_variables.append(variable_def.id)
