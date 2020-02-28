@@ -48,8 +48,8 @@ class _ComplexityMetrics(object):
     expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
     variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
         default=defaultdict(
-                list,
-            )
+            list,
+        )
     )
 
 
