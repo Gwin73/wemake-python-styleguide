@@ -63,10 +63,11 @@ class _ComplexityCounter(object):
 
     def __init__(self) -> None:
         self.metrics = attr.asdict(_ComplexityMetrics())
+        self.metr = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        (self.metrics)[arguments][node] = len(functions.get_all_arguments(node))
+        self.metr.arguments[node] = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
         """
