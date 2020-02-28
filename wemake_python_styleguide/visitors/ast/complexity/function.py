@@ -4,6 +4,7 @@ import ast
 from collections import defaultdict
 from typing import ClassVar, DefaultDict, Dict, List, Tuple, Type, Union
 
+import attr
 from typing_extensions import final
 
 from wemake_python_styleguide.logic.complexity import cognitive
@@ -20,27 +21,31 @@ from wemake_python_styleguide.violations.base import BaseViolation
 from wemake_python_styleguide.visitors.base import BaseNodeVisitor
 from wemake_python_styleguide.visitors.decorators import alias
 
-_FunctionCounter = DefaultDict[AnyFunctionDef, int]
-_FunctionCounterWithLambda = DefaultDict[AnyFunctionDefAndLambda, int]
-_AnyFunctionCounter = Union[_FunctionCounter, _FunctionCounterWithLambda]
-_CheckRule = Tuple[_AnyFunctionCounter, int, Type[BaseViolation]]
+_FuncCount = DefaultDict[AnyFunctionDef, int]
+_FuncCountWithLambda = DefaultDict[AnyFunctionDefAndLambda, int]
+_FuncCountVars = DefaultDict[AnyFunctionDef, List[str]]
+_AnyFuncCount = Union[_FuncCount, _FuncCountWithLambda]
+_CheckRule = Tuple[_AnyFuncCount, int, Type[BaseViolation]]
 _NodeTypeHandler = Dict[
     Union[type, Tuple[type, ...]],
-    _FunctionCounter,
+    _FuncCount,
 ]
 
 
 @final
-class _ComplexityExitMetrics(object):
+@attr.dataclass(Frozen = False)
+class _ComplexityMetrics(object):
     """
     Helper class.
 
-    Stores counters of statements that exit from a function.
+    Stores counters of function internals.
     """
 
-    def __init__(self) -> None:
-        self.returns: _FunctionCounter = defaultdict(int)
-        self.raises: _FunctionCounter = defaultdict(int)
+    returns: _FuncCount = attr.ib(default=lambda: defaultdict(int))
+    raises: _FuncCount = attr.ib(default=lambda: defaultdict(int))
+    awaits: _FuncCount = attr.ib(default=lambda: defaultdict(int))  # noqa: WPS204
+    asserts: _FuncCount = attr.ib(default=lambda: defaultdict(int))
+    expressions: _FuncCount = attr.ib(default=lambda: defaultdict(int))
 
 
 @final
@@ -52,14 +57,11 @@ class _ComplexityCounter(object):
     )
 
     def __init__(self) -> None:
-        self.awaits: _FunctionCounter = defaultdict(int)  # noqa: WPS204
-        self.arguments: _FunctionCounterWithLambda = defaultdict(int)
-        self.asserts: _FunctionCounter = defaultdict(int)
-        self.expressions: _FunctionCounter = defaultdict(int)
-        self.variables: DefaultDict[AnyFunctionDef, List[str]] = defaultdict(
+        self.arguments: _FuncCountWithLambda = defaultdict(int)
+        self.variables: _FuncCountVars = defaultdict(
             list,
         )
-        self.exit_metrics = _ComplexityExitMetrics()
+        self.metr = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
@@ -91,7 +93,9 @@ class _ComplexityCounter(object):
             if access.is_unused(variable_def.id):
                 return
 
-            if isinstance(get_parent(variable_def), self._not_contain_locals):
+            parent = get_parent(variable_def)
+            no_locals = self._not_contain_locals
+            if isinstance(parent, no_locals):
                 return
 
             function_variables.append(variable_def.id)
@@ -106,11 +110,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: self.exit_metrics.returns,
-            ast.Expr: self.expressions,
-            ast.Await: self.awaits,
-            ast.Assert: self.asserts,
-            ast.Raise: self.exit_metrics.raises,
+            ast.Return: self.metr.returns,
+            ast.Expr: self.metr.expressions,
+            ast.Await: self.metr.awaits,
+            ast.Assert: self.metr.asserts,
+            ast.Raise: self.metr.raises,
         }
 
         for types, counter in error_counters.items():
@@ -180,7 +184,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                     ),
                 )
 
-        for exp_node, expressions in self._counter.expressions.items():
+        for exp_node, expressions in self._counter.metr.expressions.items():
             if expressions > self.options.max_expressions:
                 self.add_violation(
                     complexity.TooManyExpressionsViolation(
@@ -206,22 +210,22 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 complexity.TooManyArgumentsViolation,
             ),
             (
-                self._counter.exit_metrics.returns,
+                self._counter.metr.returns,
                 self.options.max_returns,
                 complexity.TooManyReturnsViolation,
             ),
             (
-                self._counter.awaits,
+                self._counter.metr.awaits,
                 self.options.max_awaits,
                 complexity.TooManyAwaitsViolation,
             ),
             (
-                self._counter.asserts,
+                self._counter.metr.asserts,
                 self.options.max_asserts,
                 complexity.TooManyAssertsViolation,
             ),
             (
-                self._counter.exit_metrics.raises,
+                self._counter.metr.raises,
                 self.options.max_raises,
                 complexity.TooManyRaisesViolation,
             ),
