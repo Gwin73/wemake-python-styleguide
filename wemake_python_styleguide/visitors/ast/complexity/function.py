@@ -41,10 +41,6 @@ class _ComplexityMetrics(object):
     Stores counters of function internals.
     """
 
-    not_contain_locals: ClassVar[AnyNodes] = (
-        ast.comprehension,
-    )
-
     returns: _FuncCount = attr.ib(default=defaultdict(int))
     raises: _FuncCount = attr.ib(default=defaultdict(int))
     awaits: _FuncCount = attr.ib(default=defaultdict(int))  # noqa: WPS204
