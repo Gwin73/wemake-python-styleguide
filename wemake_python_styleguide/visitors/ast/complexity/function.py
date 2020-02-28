@@ -42,15 +42,15 @@ class _ComplexityMetrics(object):
 
     returns: _FunctionCounter = attr.ib(default=defaultdict(int))
     raises: _FunctionCounter = attr.ib(default=defaultdict(int))
-    awaits: _FunctionCounter =\
-        attr.ib(default=defaultdict(int))  # noqa: WPS204
+    awaits: _FunctionCounter = attr.ib(default=defaultdict(int)) # noqa: WPS204
     arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
     asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
     expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
-    variables: DefaultDict[AnyFunctionDef, List[str]]\
-        = attr.ib(default=defaultdict(
-            list,
-        ))
+    variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
+        default=defaultdict(
+                list,
+            )
+    )
 
 
 @final
