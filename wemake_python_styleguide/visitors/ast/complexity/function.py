@@ -44,27 +44,22 @@ class _ComplexityMetrics(object):
         ast.comprehension,
     )
 
-    def __attrs_post_init__(self):
-        returns: _FunctionCounter = attr.ib(default=defaultdict(int))
-        raises: _FunctionCounter = attr.ib(default=defaultdict(int))
-        awaits: _FunctionCounter = attr.ib(
-            default=defaultdict(int))  # noqa: WPS204
-        arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
-        asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
-        expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
-        variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
-            default=defaultdict(
-                list,
-            ))
+    returns: _FunctionCounter = attr.ib(default=defaultdict(int))
+    raises: _FunctionCounter = attr.ib(default=defaultdict(int))
+    awaits: _FunctionCounter = attr.ib(
+        default=defaultdict(int))  # noqa: WPS204
+    arguments: _FunctionCounterWithLambda = attr.ib(default=defaultdict(int))
+    asserts: _FunctionCounter = attr.ib(default=defaultdict(int))
+    expressions: _FunctionCounter = attr.ib(default=defaultdict(int))
+    variables: DefaultDict[AnyFunctionDef, List[str]] = attr.ib(
+        default=defaultdict(
+            list,
+        ))
 
 
 @final
 class _ComplexityCounter(object):
     """Helper class to encapsulate logic from the visitor."""
-
-    _not_contain_locals: ClassVar[AnyNodes] = (
-        ast.comprehension,
-    )
 
     def __init__(self) -> None:
         self.metr = _ComplexityMetrics()
@@ -99,7 +94,7 @@ class _ComplexityCounter(object):
             if access.is_unused(variable_def.id):
                 return
 
-            if isinstance(get_parent(variable_def), self._not_contain_locals):
+            if isinstance(get_parent(variable_def), self.metr._not_contain_locals):
                 return
 
             function_variables.append(variable_def.id)
