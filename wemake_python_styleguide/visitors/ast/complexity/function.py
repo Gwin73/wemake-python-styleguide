@@ -41,13 +41,13 @@ class _ComplexityMetrics(object):
     Stores counters of function internals.
     """
 
-    returns: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
-    raises: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
-    awaits: _FuncCount = attr.ib(
-        factory=lambda: defaultdict(int)
-    )  # noqa: WPS204
-    asserts: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
-    expressions: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
+    defaultDict = lambda: defaultdict(int)
+
+    returns: _FuncCount = attr.ib(factory=defaultDict)
+    raises: _FuncCount = attr.ib(factory=defaultDict)
+    awaits: _FuncCount = attr.ib(factory=defaultDict)  # noqa: WPS204
+    asserts: _FuncCount = attr.ib(factory=defaultdict)
+    expressions: _FuncCount = attr.ib(factory=defaultdict)
 
 
 @final
