@@ -46,7 +46,10 @@ class _ComplexityMetrics(object):
     awaits: _FunCt = attr.ib(factory=lambda: defaultdict(int))  # noqa: WPS204
     asserts: _FunCt = attr.ib(factory=lambda: defaultdict(int))
     expressions: _FunCt = attr.ib(factory=lambda: defaultdict(int))
-
+    arguments: _FunCtWithLambda = defaultdict(int)
+    variables: _FunCtVars = defaultdict(
+        list,
+    )
 
 @final
 class _ComplexityCounter(object):
@@ -57,15 +60,11 @@ class _ComplexityCounter(object):
     )
 
     def __init__(self) -> None:
-        self.arguments: _FunCtWithLambda = defaultdict(int)
-        self.variables: _FunCtVars = defaultdict(
-            list,
-        )
         self.metr = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        self.arguments[node] = len(functions.get_all_arguments(node))
+        self.metr.arguments[node] = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
         """
@@ -88,7 +87,7 @@ class _ComplexityCounter(object):
         What is treated as a local variable?
         Check ``TooManyLocalsViolation`` documentation.
         """
-        function_variables = self.variables[function]
+        function_variables = self.metr.variables[function]
         if variable_def.id not in function_variables:
             if access.is_unused(variable_def.id):
                 return
@@ -174,7 +173,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
         self.generic_visit(node)
 
     def _check_function_internals(self) -> None:
-        for var_node, variables in self._counter.variables.items():
+        for var_node, variables in self._counter.metr.variables.items():
             if len(variables) > self.options.max_local_variables:
                 self.add_violation(
                     complexity.TooManyLocalsViolation(
@@ -205,7 +204,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
     def _function_checks(self) -> List[_CheckRule]:
         return [
             (
-                self._counter.arguments,
+                self._counter.metr.arguments,
                 self.options.max_arguments,
                 complexity.TooManyArgumentsViolation,
             ),
