@@ -21,14 +21,14 @@ from wemake_python_styleguide.violations.base import BaseViolation
 from wemake_python_styleguide.visitors.base import BaseNodeVisitor
 from wemake_python_styleguide.visitors.decorators import alias
 
-_FuncCount = DefaultDict[AnyFunctionDef, int]
-_FuncCountWithLambda = DefaultDict[AnyFunctionDefAndLambda, int]
-_FuncCountVars = DefaultDict[AnyFunctionDef, List[str]]
-_AnyFuncCount = Union[_FuncCount, _FuncCountWithLambda]
-_CheckRule = Tuple[_AnyFuncCount, int, Type[BaseViolation]]
+_FunCt = DefaultDict[AnyFunctionDef, int]
+_FunCtWithLambda = DefaultDict[AnyFunctionDefAndLambda, int]
+_FunCtVars = DefaultDict[AnyFunctionDef, List[str]]
+_AnyFunCt = Union[_FunCt, _FunCtWithLambda]
+_CheckRule = Tuple[_AnyFunCt, int, Type[BaseViolation]]
 _NodeTypeHandler = Dict[
     Union[type, Tuple[type, ...]],
-    _FuncCount,
+    _FunCt,
 ]
 
 
@@ -41,13 +41,11 @@ class _ComplexityMetrics(object):
     Stores counters of function internals.
     """
 
-    defaultDict = lambda: defaultdict(int)
-
-    returns: _FuncCount = attr.ib(factory=defaultDict)
-    raises: _FuncCount = attr.ib(factory=defaultDict)
-    awaits: _FuncCount = attr.ib(factory=defaultDict)  # noqa: WPS204
-    asserts: _FuncCount = attr.ib(factory=defaultdict)
-    expressions: _FuncCount = attr.ib(factory=defaultdict)
+    returns: _FunCt = attr.ib(factory=lambda: defaultdict(int))
+    raises: _FunCt = attr.ib(factory=lambda: defaultdict(int))
+    awaits: _FunCt = attr.ib(factory=lambda: defaultdict(int))  # noqa: WPS204
+    asserts: _FunCt = attr.ib(factory=lambda: defaultdict(int))
+    expressions: _FunCt = attr.ib(factory=lambda: defaultdict(int))
 
 
 @final
@@ -59,8 +57,8 @@ class _ComplexityCounter(object):
     )
 
     def __init__(self) -> None:
-        self.arguments: _FuncCountWithLambda = defaultdict(int)
-        self.variables: _FuncCountVars = defaultdict(
+        self.arguments: _FunCtWithLambda = defaultdict(int)
+        self.variables: _FunCtVars = defaultdict(
             list,
         )
         self.metr = _ComplexityMetrics()
