@@ -46,7 +46,6 @@ class _ComplexityMetrics(object):
     awaits: _FunCt = attr.ib(factory=lambda: defaultdict(int))  # noqa: WPS204
     asserts: _FunCt = attr.ib(factory=lambda: defaultdict(int))
     expressions: _FunCt = attr.ib(factory=lambda: defaultdict(int))
-    arguments: _FunCtWithLambda = defaultdict(int)
 
 
 @final
@@ -58,15 +57,15 @@ class _ComplexityCounter(object):
     )
 
     def __init__(self) -> None:
+        self.arguments: _FunCtWithLambda = defaultdict(int)
         self.variables: _FunCtVars = defaultdict(
             list,
         )
-
         self.metr = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
-        self.metr.arguments[node] = len(functions.get_all_arguments(node))
+        self.arguments[node] = len(functions.get_all_arguments(node))
 
     def check_function_complexity(self, node: AnyFunctionDef) -> None:
         """
@@ -206,7 +205,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
     def _function_checks(self) -> List[_CheckRule]:
         return [
             (
-                self._counter.metr.arguments,
+                self._counter.arguments,
                 self.options.max_arguments,
                 complexity.TooManyArgumentsViolation,
             ),
