@@ -48,6 +48,7 @@ class _ComplexityMetrics(object):
     expressions: _FunCt = attr.ib(factory=lambda: defaultdict(int))
     arguments: _FunCtWithLambda = defaultdict(int)
 
+
 @final
 class _ComplexityCounter(object):
     """Helper class to encapsulate logic from the visitor."""
