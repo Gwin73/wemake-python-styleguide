@@ -43,7 +43,9 @@ class _ComplexityMetrics(object):
 
     returns: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
     raises: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
-    awaits: _FuncCount = attr.ib(factory=lambda: defaultdict(int))  # noqa: WPS204
+    awaits: _FuncCount = attr.ib(
+        factory=lambda: defaultdict(int)
+    )  # noqa: WPS204
     asserts: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
     expressions: _FuncCount = attr.ib(factory=lambda: defaultdict(int))
 
