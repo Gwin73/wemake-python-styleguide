@@ -41,14 +41,14 @@ class _ComplexityMetrics(object):
     Stores counters of function internals.
     """
 
+    def _counter_factory() -> DefaultDict[AnyFunctionDef, int]:
+        return defaultdict(int)
+
     returns: _FunCt = attr.ib(factory=_counter_factory())
     raises: _FunCt = attr.ib(factory=_counter_factory())
     awaits: _FunCt = attr.ib(factory=_counter_factory())  # noqa: WPS204
     asserts: _FunCt = attr.ib(factory=_counter_factory())
     expressions: _FunCt = attr.ib(factory=_counter_factory())
-
-    def _counter_factory() -> DefaultDict[AnyFunctionDef, int]:
-        return defaultdict(int)
 
 
 @final
