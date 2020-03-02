@@ -64,7 +64,7 @@ class _ComplexityCounter(object):
         self.variables: _FunCtVars = defaultdict(
             list,
         )
-        self.metr = _ComplexityMetrics()
+        self.metrics = _ComplexityMetrics()
 
     def check_arguments_count(self, node: AnyFunctionDefAndLambda) -> None:
         """Checks the number of the arguments in a function."""
@@ -113,11 +113,11 @@ class _ComplexityCounter(object):
                 self._update_variables(node, sub_node)
 
         error_counters: _NodeTypeHandler = {
-            ast.Return: self.metr.returns,
-            ast.Expr: self.metr.expressions,
-            ast.Await: self.metr.awaits,
-            ast.Assert: self.metr.asserts,
-            ast.Raise: self.metr.raises,
+            ast.Return: self.metrics.returns,
+            ast.Expr: self.metrics.expressions,
+            ast.Await: self.metrics.awaits,
+            ast.Assert: self.metrics.asserts,
+            ast.Raise: self.metrics.raises,
         }
 
         for types, counter in error_counters.items():
@@ -187,7 +187,7 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                     ),
                 )
 
-        for exp_node, expressions in self._counter.metr.expressions.items():
+        for exp_node, expressions in self._counter.metrics.expressions.items():
             if expressions > self.options.max_expressions:
                 self.add_violation(
                     complexity.TooManyExpressionsViolation(
@@ -213,22 +213,22 @@ class FunctionComplexityVisitor(BaseNodeVisitor):
                 complexity.TooManyArgumentsViolation,
             ),
             (
-                self._counter.metr.returns,
+                self._counter.metrics.returns,
                 self.options.max_returns,
                 complexity.TooManyReturnsViolation,
             ),
             (
-                self._counter.metr.awaits,
+                self._counter.metrics.awaits,
                 self.options.max_awaits,
                 complexity.TooManyAwaitsViolation,
             ),
             (
-                self._counter.metr.asserts,
+                self._counter.metrics.asserts,
                 self.options.max_asserts,
                 complexity.TooManyAssertsViolation,
             ),
             (
-                self._counter.metr.raises,
+                self._counter.metrics.raises,
                 self.options.max_raises,
                 complexity.TooManyRaisesViolation,
             ),
