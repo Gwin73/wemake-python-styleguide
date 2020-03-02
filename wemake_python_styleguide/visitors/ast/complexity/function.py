@@ -42,7 +42,7 @@ class _ComplexityMetrics(object):
     """
 
     def _counter_factory() -> DefaultDict[AnyFunctionDef, int]:
-        return defaultdict(int)
+        return lambda: defaultdict(int)
 
     returns: _FunCt = attr.ib(factory=_counter_factory())
     raises: _FunCt = attr.ib(factory=_counter_factory())
