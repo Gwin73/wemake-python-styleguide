@@ -42,13 +42,13 @@ class _ComplexityMetrics(object):
     """
 
     def _counter_factory() -> DefaultDict[AnyFunctionDef, int]:
-        return lambda: defaultdict(int)
+        return defaultdict(int)
 
-    returns: _FunCt = attr.ib(factory=_counter_factory())
-    raises: _FunCt = attr.ib(factory=_counter_factory())
-    awaits: _FunCt = attr.ib(factory=_counter_factory())  # noqa: WPS204
-    asserts: _FunCt = attr.ib(factory=_counter_factory())
-    expressions: _FunCt = attr.ib(factory=_counter_factory())
+    returns: _FunCt = attr.ib(default=_counter_factory())
+    raises: _FunCt = attr.ib(default=_counter_factory())
+    awaits: _FunCt = attr.ib(default=_counter_factory())  # noqa: WPS204
+    asserts: _FunCt = attr.ib(default=_counter_factory())
+    expressions: _FunCt = attr.ib(default=_counter_factory())
 
 
 @final
